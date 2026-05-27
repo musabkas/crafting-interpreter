@@ -2,11 +2,15 @@
 #include <fstream>
 #include <string>
 
+#include "Scanner.hpp"
+
 void run(std::string source) {
-    for (char letter : source) {
-        std::cout << letter;
+    std::shared_ptr<Scanner> scanner = std::make_shared<Scanner>(source);
+    std::vector<Token> tokens = scanner->scanTokens();
+
+    for (Token token : tokens) {
+        // std::cout << token << std::endl;
     }
-    std::cout << std::endl;
 }
 
 void runPrompt() {
