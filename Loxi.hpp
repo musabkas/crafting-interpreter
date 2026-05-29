@@ -11,5 +11,5 @@ class Loxi {
     public:
     Loxi();
     void runPrompt();
-    void runScript(std::string path);
+    int runScript(std::string path);
 };

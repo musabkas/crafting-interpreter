@@ -12,10 +12,10 @@ void Loxi::run(std::string source) {
         // std::cout << token << std::endl;
     }
 }
-void error(int line, std::string message){
+void Loxi::error(int line, std::string message){
     report(line, "", message);
 }
-void report(int line, std::string where, std::string message){
+void Loxi::report(int line, std::string where, std::string message){
     std::cout << "[line " << line << "] Error" + where + ": " + message << std::endl;
     hadError = true;
 }
@@ -25,7 +25,7 @@ Loxi::Loxi(){
 }
 
 
-int Loxi::runPrompt() {
+void Loxi::runPrompt() {
     while (true) {
         std::cout << "> ";
         std::string line;
@@ -40,7 +40,7 @@ int Loxi::runScript(std::string path){
     std::ifstream script(path);
     if (!script.is_open()) {
         std::cout << "Could not open file: " << path << std::endl;
-        return;
+        return 1;
     }
 
     std::string source;
@@ -51,6 +51,7 @@ int Loxi::runScript(std::string path){
     run(source);
 
     if (hadError) return 1; // Non-zero exit code for error
+    else return 0;
 }
 
 
@@ -63,6 +64,6 @@ int main(int argc, char* argv[]){
         return program.runScript(argv[1]);
     } else {
         std::cout << "Running prompt " << std::endl;
-        return program.runPrompt();
+        program.runPrompt();
     }
 }
