@@ -4,24 +4,23 @@
 #include "Scanner.hpp"
 #include "Loxi.hpp"
 
+bool Loxi::hadError = false;
+
 void Loxi::run(std::string source) {
     std::shared_ptr<Scanner> scanner = std::make_shared<Scanner>(source);
     std::vector<Token> tokens = scanner->scanTokens();
 
     for (Token token : tokens) {
-        // std::cout << token << std::endl;
+        std::cout << token << std::endl;
     }
 }
 void Loxi::error(int line, std::string message){
     report(line, "", message);
 }
+
 void Loxi::report(int line, std::string where, std::string message){
     std::cout << "[line " << line << "] Error" + where + ": " + message << std::endl;
     hadError = true;
-}
-
-Loxi::Loxi(){
-    hadError = false;
 }
 
 
