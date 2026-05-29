@@ -1,13 +1,8 @@
-#include <iostream>
 #include <fstream>
-#include <string>
+#include <iostream>
 
 #include "Scanner.hpp"
 #include "Loxi.hpp"
-
-Loxi::Loxi(){
-    hadError = false;
-}
 
 void Loxi::run(std::string source) {
     std::shared_ptr<Scanner> scanner = std::make_shared<Scanner>(source);
@@ -17,18 +12,31 @@ void Loxi::run(std::string source) {
         // std::cout << token << std::endl;
     }
 }
+void error(int line, std::string message){
+    report(line, "", message);
+}
+void report(int line, std::string where, std::string message){
+    std::cout << "[line " << line << "] Error" + where + ": " + message << std::endl;
+    hadError = true;
+}
 
-void Loxi::runPrompt() {
+Loxi::Loxi(){
+    hadError = false;
+}
+
+
+int Loxi::runPrompt() {
     while (true) {
         std::cout << "> ";
         std::string line;
         if (!std::getline(std::cin, line)) break; // if EOF sent then end program, else read line
         run(line);
+        hadError = false;
     }
     std::cout << std::endl;
 }
 
-void Loxi::runScript(std::string path){
+int Loxi::runScript(std::string path){
     std::ifstream script(path);
     if (!script.is_open()) {
         std::cout << "Could not open file: " << path << std::endl;
@@ -40,8 +48,9 @@ void Loxi::runScript(std::string path){
     while (std::getline(script, line)) {
         source += line + "\n";
     }
-    // source.pop_back(); // remove final \n
     run(source);
+
+    if (hadError) return 1; // Non-zero exit code for error
 }
 
 
@@ -51,9 +60,9 @@ int main(int argc, char* argv[]){
         std::cout << "Usage: loxi [script]" << std::endl;
     } else if (argc == 2) {
         std::cout << "Running script " << argv[1] << std::endl;
-        program.runScript(argv[1]);
+        return program.runScript(argv[1]);
     } else {
         std::cout << "Running prompt " << std::endl;
-        program.runPrompt();
+        return program.runPrompt();
     }
 }
