@@ -1,5 +1,5 @@
 build:
-	g++ loxi.cpp -o loxi.out
+	g++ Loxi.cpp -o loxi.out
 
 runprompt:
 	make build
