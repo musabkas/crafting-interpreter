@@ -7,7 +7,7 @@
 class Scanner{
 private:
     std::string source;
-    std::vector<Token> tokens;
+    std::vector<Token*> tokens;
     static std::map<std::string, TokenType> keywords;
 
     int start, current, line;
@@ -33,5 +33,5 @@ private:
 
 public:
     Scanner(std::string source);
-    std::vector<Token> scanTokens();
+    std::vector<Token*> scanTokens();
 };

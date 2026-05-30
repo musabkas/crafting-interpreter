@@ -156,15 +156,15 @@ void Scanner::addToken(TokenType type){
 }
 
 void Scanner::addToken(TokenType type, std::variant<double, std::string, void *> literal){
-    tokens.push_back(Token(type, source.substr(start, current - start), literal, line));
+    tokens.push_back(new Token(type, source.substr(start, current - start), literal, line));
 }
 
-std::vector<Token> Scanner::scanTokens() {
+std::vector<Token*> Scanner::scanTokens() {
     while (!isAtEnd()) {
         start = current;
         scanToken();
     }
 
-    tokens.push_back(Token(END_OF_FILE, "", nullptr, line));
+    tokens.push_back(new Token(END_OF_FILE, "", nullptr, line));
     return tokens;
 }
