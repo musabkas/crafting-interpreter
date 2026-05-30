@@ -3,12 +3,12 @@
 #include <string>
 
 class Token{
+public:
     TokenType type;
     std::string lexeme;
     std::variant<double, std::string, void *> literal;
     int line;
 
-public:
     Token(TokenType type, std::string lexeme, std::variant<double, std::string, void *> literal, int line);
     std::string to_string();
 
