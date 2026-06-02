@@ -1,29 +1,31 @@
 #pragma once
 #include "Token.hpp"
 #include <string>
+#include <memory>
 
 class ASTPrinter;
 
 class Expr {
 public:
+	virtual ~Expr() = default;
 	virtual std::string acceptASTPrinter(ASTPrinter* visitor) = 0;
 };
 
 class Binary : public Expr {
 public:
-	Expr* left;
-	Token* op;
-	Expr* right;
+	std::unique_ptr<Expr> left;
+	std::unique_ptr<Token> op;
+	std::unique_ptr<Expr> right;
 
-	Binary(Expr* left, Token* op, Expr* right);
+	Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
 };
 
 class Grouping : public Expr {
 public:
-	Expr* expression;
+	std::unique_ptr<Expr> expression;
 
-	Grouping(Expr* expression);
+	Grouping(std::unique_ptr<Expr> expression);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
 };
 
@@ -37,10 +39,10 @@ public:
 
 class Unary : public Expr {
 public:
-	Token* op;
-	Expr* right;
+	std::unique_ptr<Token> op;
+	std::unique_ptr<Expr> right;
 
-	Unary(Token* op, Expr* right);
+	Unary(std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
 };
 

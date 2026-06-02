@@ -1,8 +1,8 @@
 baseName = "Expr"
-types = [("Binary", [("Expr*", "left"), ("Token*", "op"), ("Expr*", "right")]), 
-        ("Grouping", [("Expr*", "expression")]),
+types = [("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
+        ("Grouping", [("std::unique_ptr<Expr>", "expression")]),
         ("Literal", [("std::variant<double, std::string, void *>", "value")]),
-        ("Unary", [("Token*", "op"), ("Expr*", "right")])]
+        ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")])]
 visitors = [("ASTPrinter", "std::string")]
 
 
@@ -15,10 +15,12 @@ def defineAst(baseName, types):
         '#pragma once\n',
         '#include "Token.hpp"\n',
         '#include <string>\n',
+        '#include <memory>\n',
         "\n",
         'class ASTPrinter;\n\n',
         f"class {baseName} {'{'}\n"
-        "public:\n"
+        "public:\n",
+        "\tvirtual ~Expr() = default;\n",
     ])
 
     # visitors
@@ -58,7 +60,7 @@ def defineType(hppFile, cppFile, baseName, className, fieldList):
     # cpp
     cppFile.writelines([
         f"{className}::{className}({', '.join([f[0] + ' ' + f[1] for f in fieldList])}){'{'}\n",
-        *[f"\tthis->{f[1]} = {f[1]};\n" for f in fieldList],
+        *[f"\tthis->{f[1]} = {f'std::move({f[1]})' if ("std::unique_ptr" in f[0]) else f[1] };\n" for f in fieldList],
         "}\n\n"
     ])
 
