@@ -1,3 +1,4 @@
+#pragma once
 #include "Token.hpp"
 #include "Expr.hpp"
 #include <vector>
@@ -13,6 +14,7 @@ private:
     std::unique_ptr<Expr> factor();
     std::unique_ptr<Expr> unary();
     std::unique_ptr<Expr> primary();
+    std::unique_ptr<Expr> expression();
 
     bool match(std::vector<TokenType> types);
 
@@ -23,7 +25,16 @@ private:
     Token peek();
     Token previous();
 
+    class ParseError : public std::runtime_error {
+        public:
+        ParseError(const std::string& message) : std::runtime_error(message) {}
+    };
+    
+    Token consume(TokenType type, std::string message);
+    ParseError error(Token token, std::string message);
+    void synchronize();
+
 public:
     Parser(std::vector<std::unique_ptr<Token>> tokens);
-    std::unique_ptr<Expr> expression();
+    std::unique_ptr<Expr> parse();
 };

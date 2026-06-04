@@ -14,6 +14,7 @@ std::string ASTPrinter::visitGrouping(Grouping* grouping) {
 std::string ASTPrinter::visitLiteral(Literal* literal) {
     if (std::holds_alternative<double>(literal->value)) return std::to_string((std::get<double>(literal->value)));
     if (std::holds_alternative<std::string>(literal->value)) return std::get<std::string>(literal->value);
+    if (std::holds_alternative<bool>(literal->value)) return (std::get<bool>(literal->value)) ? "true" : "false";
     else return "nil";
 }
 

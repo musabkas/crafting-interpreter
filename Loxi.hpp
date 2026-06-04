@@ -11,6 +11,7 @@ class Loxi {
     public:
     Loxi() = default;
     static void error(int line, std::string message);
+    static void error(Token token, std::string message);
     void runPrompt();
     int runScript(std::string path);
 };

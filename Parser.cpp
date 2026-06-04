@@ -1,4 +1,5 @@
 #include "Parser.hpp"
+#include "Loxi.hpp"
 
 Parser::Parser(std::vector<std::unique_ptr<Token>> tokens){
     this->tokens = std::move(tokens);
@@ -49,7 +50,7 @@ std::unique_ptr<Expr> Parser::equality(){
     while (match({BANG_EQUAL, EQUAL_EQUAL})) {
         std::unique_ptr<Token> op = std::make_unique<Token>(previous()); // using copy constructor to create duplicate of token so that it is not deleted when token unique_ptr is deleted from stack
         std::unique_ptr<Expr> right = std::move(comparison());
-        expr = std::make_unique<Binary>(expr, op, right);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(op), std::move(right));
     }
 
     return std::move(expr);
@@ -61,7 +62,7 @@ std::unique_ptr<Expr> Parser::comparison(){
     while (match({GREATER, GREATER_EQUAL, LESS, LESS_EQUAL})) {
         std::unique_ptr<Token> op = std::make_unique<Token>(previous());
         std::unique_ptr<Expr> right = std::move(term());
-        expr = std::make_unique<Binary>(expr, op, right);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(op), std::move(right));
     }
     
     return std::move(expr);
@@ -73,7 +74,7 @@ std::unique_ptr<Expr> Parser::term(){
     while (match({MINUS, PLUS})) {
         std::unique_ptr<Token> op = std::make_unique<Token>(previous());
         std::unique_ptr<Expr> right = std::move(factor());
-        expr = std::make_unique<Binary>(expr, op, right);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(op), std::move(right));
     }
 
     return std::move(expr);
@@ -85,7 +86,7 @@ std::unique_ptr<Expr> Parser::factor(){
     while (match({SLASH, STAR})) {
         std::unique_ptr<Token> op = std::make_unique<Token>(previous());
         std::unique_ptr<Expr> right = std::move(unary());
-        expr = std::make_unique<Binary>(expr, op, right);
+        expr = std::make_unique<Binary>(std::move(expr), std::move(op), std::move(right));
     }
 
     return std::move(expr);
@@ -95,23 +96,67 @@ std::unique_ptr<Expr> Parser::unary(){
     if (match({BANG, MINUS})) {
         std::unique_ptr<Token> op = std::make_unique<Token>(previous());
         std::unique_ptr<Expr> right = std::move(unary());
-        return std::move(std::make_unique<Unary>(op, right));
+        return std::make_unique<Unary>(std::move(op), std::move(right));
     }
     return primary();
 }
 
 std::unique_ptr<Expr> Parser::primary(){
-    if (match({FALSE})) return std::move(std::make_unique<Literal>(false));
-    if (match({TRUE})) return std::move(std::make_unique<Literal>(true));
-    if (match({NIL})) return std::move(std::make_unique<Literal>(nullptr));
+    if (match({FALSE})) return std::make_unique<Literal>(false);
+    if (match({TRUE})) return std::make_unique<Literal>(true);
+    if (match({NIL})) return std::make_unique<Literal>(nullptr);
 
-    if (match({NUMBER, STRING})) {
-        return std::move(std::make_unique<Literal>(previous().literal));
+    if (match({NUMBER})) {
+        return std::make_unique<Literal>(std::get<double>(previous().literal));
+    }
+    if (match({STRING})) {
+        return std::make_unique<Literal>(std::get<std::string>(previous().literal));
     }
 
     if (match({LEFT_PAREN})){
         std::unique_ptr<Expr> expr = std::move(expression());
         consume(RIGHT_PAREN, "Expect ')' after expression.");
-        return std::move(std::make_unique<Grouping>(expr));
+        return std::make_unique<Grouping>(std::move(expr));
+    }
+    throw error(peek(), "Expect expression.");
+}
+
+Token Parser::consume(TokenType type, std::string message){
+    if (check(type)) return advance();
+    throw error(peek(), message);
+}
+
+Parser::ParseError Parser::error(Token token, std::string message){
+    Loxi::error(token, message);
+    return ParseError(message);
+}
+
+void Parser::synchronize(){
+    advance();
+
+    while (!isAtEnd()) {
+        if (previous().type == SEMICOLON) return;
+
+        switch(peek().type) {
+            case CLASS:
+            case FUN:
+            case VAR:
+            case FOR:
+            case IF:
+            case WHILE:
+            case PRINT:
+            case RETURN:
+                return;
+            default:
+                advance();
+        }
+    }
+}
+
+std::unique_ptr<Expr> Parser::parse(){
+    try {
+        return std::move(expression());
+    } catch (ParseError error) {
+        return nullptr;
     }
 }
