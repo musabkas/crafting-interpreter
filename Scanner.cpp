@@ -23,7 +23,6 @@ std::map<std::string, TokenType> Scanner::keywords = {
 
 Scanner::Scanner(std::string source) {
     this->source = source;
-    this->tokens = {};
     this->start = 0;
     this->current = 0;
     this->line = 1;
@@ -156,15 +155,15 @@ void Scanner::addToken(TokenType type){
 }
 
 void Scanner::addToken(TokenType type, std::variant<double, std::string, void *> literal){
-    tokens.push_back(new Token(type, source.substr(start, current - start), literal, line));
+    tokens.emplace_back(std::make_unique<Token>(type, source.substr(start, current - start), literal, line));
 }
 
-std::vector<Token*> Scanner::scanTokens() {
+std::vector<std::unique_ptr<Token>> Scanner::scanTokens() {
     while (!isAtEnd()) {
         start = current;
         scanToken();
     }
 
-    tokens.push_back(new Token(END_OF_FILE, "", nullptr, line));
-    return tokens;
+    tokens.emplace_back(std::make_unique<Token>(END_OF_FILE, "", nullptr, line));
+    return std::move(tokens);
 }

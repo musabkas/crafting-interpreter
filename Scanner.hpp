@@ -2,12 +2,13 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 #include "Token.hpp"
 
 class Scanner{
 private:
     std::string source;
-    std::vector<Token*> tokens;
+    std::vector<std::unique_ptr<Token>> tokens;
     static std::map<std::string, TokenType> keywords;
 
     int start, current, line;
@@ -33,5 +34,5 @@ private:
 
 public:
     Scanner(std::string source);
-    std::vector<Token*> scanTokens();
+    std::vector<std::unique_ptr<Token>> scanTokens();
 };

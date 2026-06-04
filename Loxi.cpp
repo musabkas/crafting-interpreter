@@ -7,10 +7,10 @@
 bool Loxi::hadError = false;
 
 void Loxi::run(std::string source) {
-    std::shared_ptr<Scanner> scanner = std::make_shared<Scanner>(source);
-    std::vector<Token*> tokens = scanner->scanTokens();
+    std::unique_ptr<Scanner> scanner = std::make_unique<Scanner>(source);
+    std::vector<std::unique_ptr<Token>> tokens = scanner->scanTokens();
 
-    for (Token* token : tokens) {
+    for (std::unique_ptr<Token>& token : tokens) {
         std::cout << *token << std::endl;
     }
 }
