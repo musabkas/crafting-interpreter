@@ -3,6 +3,8 @@
 #include <string>
 #include <memory>
 
+using LoxObject = std::variant<double, std::string, bool, void*>;
+
 class ASTPrinter;
 
 class Expr {
@@ -31,9 +33,9 @@ public:
 
 class Literal : public Expr {
 public:
-	std::variant<double, std::string, bool, void *> value;
+	LoxObject value;
 
-	Literal(std::variant<double, std::string, bool, void *> value);
+	Literal(LoxObject value);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
 };
 

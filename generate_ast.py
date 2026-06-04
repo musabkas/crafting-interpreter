@@ -1,7 +1,7 @@
 baseName = "Expr"
 types = [("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
         ("Grouping", [("std::unique_ptr<Expr>", "expression")]),
-        ("Literal", [("std::variant<double, std::string, bool, void *>", "value")]),
+        ("Literal", [("LoxObject", "value")]),
         ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")])]
 visitors = [("ASTPrinter", "std::string")]
 
@@ -16,6 +16,8 @@ def defineAst(baseName, types):
         '#include "Token.hpp"\n',
         '#include <string>\n',
         '#include <memory>\n',
+        "\n",
+        "using LoxObject = std::variant<double, std::string, bool, void*>;\n",
         "\n",
         'class ASTPrinter;\n\n',
         f"class {baseName} {'{'}\n"
