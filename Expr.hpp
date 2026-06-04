@@ -31,9 +31,9 @@ public:
 
 class Literal : public Expr {
 public:
-	std::variant<double, std::string, void *> value;
+	std::variant<double, std::string, bool, void *> value;
 
-	Literal(std::variant<double, std::string, void *> value);
+	Literal(std::variant<double, std::string, bool, void *> value);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
 };
 

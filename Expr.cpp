@@ -19,7 +19,7 @@ std::string Grouping::acceptASTPrinter(ASTPrinter* visitor){
 	return visitor->visitGrouping(this);
 }
 
-Literal::Literal(std::variant<double, std::string, void *> value){
+Literal::Literal(std::variant<double, std::string, bool, void *> value){
 	this->value = value;
 }
 

@@ -1,7 +1,7 @@
 baseName = "Expr"
 types = [("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
         ("Grouping", [("std::unique_ptr<Expr>", "expression")]),
-        ("Literal", [("std::variant<double, std::string, void *>", "value")]),
+        ("Literal", [("std::variant<double, std::string, bool, void *>", "value")]),
         ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")])]
 visitors = [("ASTPrinter", "std::string")]
 
