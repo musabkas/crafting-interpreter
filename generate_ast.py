@@ -3,7 +3,8 @@ types = [("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>
         ("Grouping", [("std::unique_ptr<Expr>", "expression")]),
         ("Literal", [("LoxObject", "value")]),
         ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")])]
-visitors = [("ASTPrinter", "std::string")]
+visitors = [("ASTPrinter", "std::string"),
+            ("Interpreter", "LoxObject")]
 
 
 def defineAst(baseName, types):
@@ -19,7 +20,8 @@ def defineAst(baseName, types):
         "\n",
         "using LoxObject = std::variant<double, std::string, bool, void*>;\n",
         "\n",
-        'class ASTPrinter;\n\n',
+        *[f'class {visitor[0]};\n' for visitor in visitors],
+        "\n",
         f"class {baseName} {'{'}\n"
         "public:\n",
         "\tvirtual ~Expr() = default;\n",

@@ -6,11 +6,13 @@
 using LoxObject = std::variant<double, std::string, bool, void*>;
 
 class ASTPrinter;
+class Interpreter;
 
 class Expr {
 public:
 	virtual ~Expr() = default;
 	virtual std::string acceptASTPrinter(ASTPrinter* visitor) = 0;
+	virtual LoxObject acceptInterpreter(Interpreter* visitor) = 0;
 };
 
 class Binary : public Expr {
@@ -21,6 +23,7 @@ public:
 
 	Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
 class Grouping : public Expr {
@@ -29,6 +32,7 @@ public:
 
 	Grouping(std::unique_ptr<Expr> expression);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
 class Literal : public Expr {
@@ -37,6 +41,7 @@ public:
 
 	Literal(LoxObject value);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
 class Unary : public Expr {
@@ -46,5 +51,6 @@ public:
 
 	Unary(std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
 	std::string acceptASTPrinter(ASTPrinter* visitor) override;
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
