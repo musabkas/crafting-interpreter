@@ -1,4 +1,7 @@
 #include "Interpreter.hpp"
+#include "RuntimeError.hpp"
+#include "Loxi.hpp"
+#include <iostream>
 
 LoxObject Interpreter::visitLiteral(Literal* literal){
     return literal->value;
@@ -12,17 +15,24 @@ LoxObject Interpreter::evaluate(Expr* expression){
     return expression->acceptInterpreter(this);
 }
 
+
 LoxObject Interpreter::visitUnary(Unary* unary){
     LoxObject right = evaluate(unary->right.get());
-
+    
     switch(unary->op->type) {
         case BANG:
-            return LoxObject(std::in_place_type<bool>, !isTruthy(right));
+        return LoxObject(std::in_place_type<bool>, !isTruthy(right));
         case MINUS:
-            return LoxObject(std::in_place_type<double>, -std::get<double>(right));
+        checkNumberOperand(*unary->op, right);
+        return LoxObject(std::in_place_type<double>, -std::get<double>(right));
     }
-
+    
     return LoxObject(std::in_place_type<void*>, nullptr);
+}
+
+void Interpreter::checkNumberOperand(Token op, LoxObject operand){
+    if (std::holds_alternative<double>(operand)) return;
+    throw RuntimeError(op, "Operand must be a number.");
 }
 
 bool Interpreter::isTruthy(LoxObject object){
@@ -36,21 +46,36 @@ LoxObject Interpreter::visitBinary(Binary* binary){
     LoxObject right = evaluate(binary->right.get());
 
     switch (binary->op->type) {
-        case GREATER: return LoxObject(std::in_place_type<bool>, std::get<double>(left) > std::get<double>(right));
-        case GREATER_EQUAL: return LoxObject(std::in_place_type<bool>, std::get<double>(left) >= std::get<double>(right));
-        case LESS: return LoxObject(std::in_place_type<bool>, std::get<double>(left) < std::get<double>(right));
-        case LESS_EQUAL: return LoxObject(std::in_place_type<bool>, std::get<double>(left) <= std::get<double>(right));
+        case GREATER: 
+            checkNumberOperands(*binary->op, left, right);
+            return LoxObject(std::in_place_type<bool>, std::get<double>(left) > std::get<double>(right));
+        case GREATER_EQUAL: 
+            checkNumberOperands(*binary->op, left, right);
+            return LoxObject(std::in_place_type<bool>, std::get<double>(left) >= std::get<double>(right));
+        case LESS: 
+            checkNumberOperands(*binary->op, left, right);   
+            return LoxObject(std::in_place_type<bool>, std::get<double>(left) < std::get<double>(right));
+        case LESS_EQUAL: 
+            checkNumberOperands(*binary->op, left, right);   
+            return LoxObject(std::in_place_type<bool>, std::get<double>(left) <= std::get<double>(right));
+
         case BANG_EQUAL: return LoxObject(std::in_place_type<bool>, !isEqual(left, right));
         case EQUAL_EQUAL: return LoxObject(std::in_place_type<bool>, isEqual(left, right));
 
-        case MINUS: return LoxObject(std::in_place_type<double>, std::get<double>(left) - std::get<double>(right));
-        case SLASH: return LoxObject(std::in_place_type<double>, std::get<double>(left) / std::get<double>(right));
-        case STAR: return LoxObject(std::in_place_type<double>, std::get<double>(left) * std::get<double>(right));
+        case MINUS: 
+            checkNumberOperands(*binary->op, left, right);   
+            return LoxObject(std::in_place_type<double>, std::get<double>(left) - std::get<double>(right));
+        case SLASH: 
+            checkNumberOperands(*binary->op, left, right);   
+            return LoxObject(std::in_place_type<double>, std::get<double>(left) / std::get<double>(right));
+        case STAR: 
+            checkNumberOperands(*binary->op, left, right);   
+            return LoxObject(std::in_place_type<double>, std::get<double>(left) * std::get<double>(right));
 
         case PLUS:
             if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) return LoxObject(std::in_place_type<double>, std::get<double>(left) + std::get<double>(right));
             if (std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right)) return LoxObject(std::in_place_type<std::string>, std::get<std::string>(left) + std::get<std::string>(right));
-            break;
+            throw RuntimeError(*binary->op, "Operands must be two numbers or two strings.");
     }
 
     return LoxObject(std::in_place_type<void*>, nullptr);
@@ -58,4 +83,25 @@ LoxObject Interpreter::visitBinary(Binary* binary){
 
 bool Interpreter::isEqual(LoxObject a, LoxObject b){
     return a == b;
+}
+
+void Interpreter::checkNumberOperands(Token op, LoxObject left, LoxObject right){
+    if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) return;
+    throw RuntimeError(op, "Operands must be numbers.");
+}
+
+void Interpreter::interpret(Expr* expression){
+    try {
+        LoxObject value = evaluate(expression);
+        std::cout << stringify(value) << std::endl;
+    } catch (RuntimeError error) {
+        Loxi::runtimeError(error);
+    }
+}
+
+std::string Interpreter::stringify(LoxObject object){
+    if (std::holds_alternative<void*>(object)) return "nil";
+    if (std::holds_alternative<double>(object)) return std::to_string(std::get<double>(object));
+    if (std::holds_alternative<bool>(object)) return (std::get<bool>(object) ? "true" : "false");
+    if (std::holds_alternative<std::string>(object)) return std::get<std::string>(object);
 }

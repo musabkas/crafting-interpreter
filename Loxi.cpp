@@ -7,6 +7,9 @@
 #include "ASTPrinter.hpp"
 
 bool Loxi::hadError = false;
+bool Loxi::hadRuntimeError = false;
+Interpreter Loxi::interpreter = Interpreter();
+
 
 void Loxi::run(std::string source) {
     std::unique_ptr<Scanner> scanner = std::make_unique<Scanner>(source);
@@ -17,9 +20,9 @@ void Loxi::run(std::string source) {
 
     if (hadError) return;
     
-    ASTPrinter AST;
-    std::cout << AST.print(expression.get()) << std::endl;
+    interpreter.interpret(expression.get());
 }
+
 void Loxi::error(int line, std::string message){
     report(line, "", message);
 }
@@ -37,6 +40,10 @@ void Loxi::error(Token token, std::string message){
     }
 }
 
+void Loxi::runtimeError(RuntimeError error){
+    std::cout << error.what() << "\n[line " << error.token.line << "]" << std::endl;
+    hadRuntimeError = true;
+}
 
 void Loxi::runPrompt() {
     while (true) {
@@ -63,7 +70,8 @@ int Loxi::runScript(std::string path){
     }
     run(source);
 
-    if (hadError) return 1; // Non-zero exit code for error
+    if (hadError) return 65; // Non-zero exit code for error
+    if (hadRuntimeError) return 70; // Non-zero exit code for error (different for different type of error)
     else return 0;
 }
 
