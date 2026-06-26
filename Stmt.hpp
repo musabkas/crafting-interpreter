@@ -29,3 +29,12 @@ public:
 	void acceptInterpreter(Interpreter* visitor) override;
 };
 
+class Var : public Stmt {
+public:
+	std::unique_ptr<Token> name;
+	std::unique_ptr<Expr> initializer;
+
+	Var(std::unique_ptr<Token> name, std::unique_ptr<Expr> initializer);
+	void acceptInterpreter(Interpreter* visitor) override;
+};
+

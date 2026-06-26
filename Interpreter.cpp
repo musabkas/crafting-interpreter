@@ -3,6 +3,10 @@
 #include "Loxi.hpp"
 #include <iostream>
 
+Interpreter::Interpreter(){
+    environment = Environment();
+}
+
 LoxObject Interpreter::visitLiteral(Literal* literal){
     return literal->value;
 }
@@ -13,6 +17,12 @@ LoxObject Interpreter::visitGrouping(Grouping* grouping){
 
 LoxObject Interpreter::evaluate(Expr* expression){
     return expression->acceptInterpreter(this);
+}
+
+LoxObject Interpreter::visitAssign(Assign* assign){
+    LoxObject value = evaluate(assign->value.get());
+    environment.assign(*(assign->name), value);
+    return value;
 }
 
 LoxObject Interpreter::visitUnary(Unary* unary){
@@ -27,26 +37,6 @@ LoxObject Interpreter::visitUnary(Unary* unary){
     }
     
     return LoxObject(std::in_place_type<void*>, nullptr);
-}
-
-void Interpreter::visitExpression(Expression* stmt){
-    evaluate(stmt->expression.get());
-}
-
-void Interpreter::visitPrint(Print* stmt){
-    LoxObject value = evaluate(stmt->expression.get());
-    std::cout << stringify(value) << std::endl;
-}
-
-void Interpreter::checkNumberOperand(Token op, LoxObject operand){
-    if (std::holds_alternative<double>(operand)) return;
-    throw RuntimeError(op, "Operand must be a number.");
-}
-
-bool Interpreter::isTruthy(LoxObject object){
-    if (std::holds_alternative<void*>(object)) return false;
-    if (std::holds_alternative<bool>(object)) return std::get<bool>(object);
-    return true;
 }
 
 LoxObject Interpreter::visitBinary(Binary* binary){
@@ -87,6 +77,39 @@ LoxObject Interpreter::visitBinary(Binary* binary){
     }
 
     return LoxObject(std::in_place_type<void*>, nullptr);
+}
+
+LoxObject Interpreter::visitVariable(Variable* var){
+    return environment.get(*(var->name));
+}
+
+void Interpreter::visitExpression(Expression* stmt){
+    evaluate(stmt->expression.get());
+}
+
+void Interpreter::visitPrint(Print* stmt){
+    LoxObject value = evaluate(stmt->expression.get());
+    std::cout << stringify(value) << std::endl;
+}
+
+void Interpreter::visitVar(Var* stmt){
+    LoxObject value = LoxObject(std::in_place_type<void*>, nullptr);
+    if (stmt->initializer) {
+        value = evaluate(stmt->initializer.get());
+    }
+
+    environment.define(stmt->name->lexeme, value);
+}
+
+void Interpreter::checkNumberOperand(Token op, LoxObject operand){
+    if (std::holds_alternative<double>(operand)) return;
+    throw RuntimeError(op, "Operand must be a number.");
+}
+
+bool Interpreter::isTruthy(LoxObject object){
+    if (std::holds_alternative<void*>(object)) return false;
+    if (std::holds_alternative<bool>(object)) return std::get<bool>(object);
+    return true;
 }
 
 bool Interpreter::isEqual(LoxObject a, LoxObject b){

@@ -1,5 +1,6 @@
 #include "Parser.hpp"
 #include "Loxi.hpp"
+#include <iostream>
 
 Parser::Parser(std::vector<std::unique_ptr<Token>> tokens){
     this->tokens = std::move(tokens);
@@ -45,11 +46,34 @@ std::unique_ptr<Stmt> Parser::statement(){
     return std::move(expressionStatement());
 }
 
+std::unique_ptr<Stmt> Parser::declaration(){
+    try {
+        if (match({VAR})) return varDeclaration();
+
+        return statement();
+    } catch (ParseError error) {
+        synchronize();
+    }
+}
+
+std::unique_ptr<Stmt> Parser::varDeclaration(){
+    std::unique_ptr<Token> name = std::make_unique<Token> (consume(IDENTIFIER, "Expect variable name"));
+
+    std::unique_ptr<Expr> initializer = nullptr;
+    if (match({EQUAL})) {
+        initializer = expression();
+    }
+
+    consume(SEMICOLON, "Expect ';' after variable declaration.");
+    return std::make_unique<Var>(std::move(name), std::move(initializer));
+}
+
 std::unique_ptr<Stmt> Parser::printStatement(){
     std::unique_ptr<Expr> value = expression();
     consume(SEMICOLON, "Expect ';' after value.");
     return std::make_unique<Print> (std::move(value));
 }
+
 std::unique_ptr<Stmt> Parser::expressionStatement(){
     std::unique_ptr<Expr> expr = expression();
     consume(SEMICOLON, "Expect ';' after expression.");
@@ -57,7 +81,25 @@ std::unique_ptr<Stmt> Parser::expressionStatement(){
 }
 
 std::unique_ptr<Expr> Parser::expression(){
-    return std::move(equality());
+    return std::move(assignment());
+}
+
+std::unique_ptr<Expr> Parser::assignment(){
+    std::unique_ptr<Expr> expr = std::move(equality());
+
+    if (match({EQUAL})) {
+        std::unique_ptr<Token> equals = std::make_unique<Token>(previous());
+        std::unique_ptr<Expr> value = std::move(assignment());
+
+        if (auto var = dynamic_cast<Variable*>(expr.get())){
+            std::unique_ptr<Token> name = std::make_unique<Token>(*(var->name));
+            return std::make_unique<Assign>(std::move(name), std::move(value));
+        }
+
+        error(*equals, "Invalid assignment target.");
+    }
+
+    return std::move(expr);
 }
 
 std::unique_ptr<Expr> Parser::equality(){
@@ -128,6 +170,9 @@ std::unique_ptr<Expr> Parser::primary(){
     if (match({STRING})) {
         return std::make_unique<Literal>(std::get<std::string>(previous().literal));
     }
+    if (match({IDENTIFIER})){
+        return std::make_unique<Variable>(std::make_unique<Token> (previous()));
+    }
 
     if (match({LEFT_PAREN})){
         std::unique_ptr<Expr> expr = std::move(expression());
@@ -172,7 +217,7 @@ void Parser::synchronize(){
 std::vector<std::unique_ptr<Stmt>> Parser::parse(){
     std::vector<std::unique_ptr<Stmt>> statements = {};
     while (!isAtEnd()){
-        statements.emplace_back(statement());
+        statements.emplace_back(declaration());
     }
     return std::move(statements);
 }

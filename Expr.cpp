@@ -1,15 +1,19 @@
 #include "Expr.hpp"
-#include "ASTPrinter.hpp"
 #include "Interpreter.hpp"
+
+Assign::Assign(std::unique_ptr<Token> name, std::unique_ptr<Expr> value){
+	this->name = std::move(name);
+	this->value = std::move(value);
+}
+
+LoxObject Assign::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitAssign(this);
+}
 
 Binary::Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right){
 	this->left = std::move(left);
 	this->op = std::move(op);
 	this->right = std::move(right);
-}
-
-std::string Binary::acceptASTPrinter(ASTPrinter* visitor){
-	return visitor->visitBinary(this);
 }
 
 LoxObject Binary::acceptInterpreter(Interpreter* visitor){
@@ -20,20 +24,12 @@ Grouping::Grouping(std::unique_ptr<Expr> expression){
 	this->expression = std::move(expression);
 }
 
-std::string Grouping::acceptASTPrinter(ASTPrinter* visitor){
-	return visitor->visitGrouping(this);
-}
-
 LoxObject Grouping::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitGrouping(this);
 }
 
 Literal::Literal(LoxObject value){
 	this->value = value;
-}
-
-std::string Literal::acceptASTPrinter(ASTPrinter* visitor){
-	return visitor->visitLiteral(this);
 }
 
 LoxObject Literal::acceptInterpreter(Interpreter* visitor){
@@ -45,11 +41,15 @@ Unary::Unary(std::unique_ptr<Token> op, std::unique_ptr<Expr> right){
 	this->right = std::move(right);
 }
 
-std::string Unary::acceptASTPrinter(ASTPrinter* visitor){
+LoxObject Unary::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitUnary(this);
 }
 
-LoxObject Unary::acceptInterpreter(Interpreter* visitor){
-	return visitor->visitUnary(this);
+Variable::Variable(std::unique_ptr<Token> name){
+	this->name = std::move(name);
+}
+
+LoxObject Variable::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitVariable(this);
 }
 

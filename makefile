@@ -1,5 +1,5 @@
 build:
-	g++ -std=c++17 *.cpp -o loxi.out
+	g++ -std=c++17 *.cpp -g -o loxi.out
 
 runprompt:
 	make build
@@ -7,4 +7,4 @@ runprompt:
 
 runscript:
 	make build
-	./loxi.out tmp.lox
+	./loxi.out script.lox

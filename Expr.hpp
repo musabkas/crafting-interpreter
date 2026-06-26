@@ -5,14 +5,21 @@
 
 using LoxObject = std::variant<double, std::string, bool, void*>;
 
-class ASTPrinter;
 class Interpreter;
 
 class Expr {
 public:
 	virtual ~Expr() = default;
-	virtual std::string acceptASTPrinter(ASTPrinter* visitor) = 0;
 	virtual LoxObject acceptInterpreter(Interpreter* visitor) = 0;
+};
+
+class Assign : public Expr {
+public:
+	std::unique_ptr<Token> name;
+	std::unique_ptr<Expr> value;
+
+	Assign(std::unique_ptr<Token> name, std::unique_ptr<Expr> value);
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
 class Binary : public Expr {
@@ -22,7 +29,6 @@ public:
 	std::unique_ptr<Expr> right;
 
 	Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
-	std::string acceptASTPrinter(ASTPrinter* visitor) override;
 	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
@@ -31,7 +37,6 @@ public:
 	std::unique_ptr<Expr> expression;
 
 	Grouping(std::unique_ptr<Expr> expression);
-	std::string acceptASTPrinter(ASTPrinter* visitor) override;
 	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
@@ -40,7 +45,6 @@ public:
 	LoxObject value;
 
 	Literal(LoxObject value);
-	std::string acceptASTPrinter(ASTPrinter* visitor) override;
 	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
@@ -50,7 +54,14 @@ public:
 	std::unique_ptr<Expr> right;
 
 	Unary(std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
-	std::string acceptASTPrinter(ASTPrinter* visitor) override;
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
+};
+
+class Variable : public Expr {
+public:
+	std::unique_ptr<Token> name;
+
+	Variable(std::unique_ptr<Token> name);
 	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 

@@ -17,3 +17,12 @@ void Print::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitPrint(this);
 }
 
+Var::Var(std::unique_ptr<Token> name, std::unique_ptr<Expr> initializer){
+	this->name = std::move(name);
+	this->initializer = std::move(initializer);
+}
+
+void Var::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitVar(this);
+}
+

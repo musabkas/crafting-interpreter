@@ -1,11 +1,19 @@
-types = [("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
+types = [
+        ("Assign", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "value")]), 
+        ("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
         ("Grouping", [("std::unique_ptr<Expr>", "expression")]),
         ("Literal", [("LoxObject", "value")]),
-        ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")])]
+        ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]),
+        ("Variable", [("std::unique_ptr<Token>", "name")]),
+        ]
 StmtTypes = [("Expression", [("std::unique_ptr<Expr>", "expression")]),
-            ("Print", [("std::unique_ptr<Expr>", "expression")])]
-visitors = [("ASTPrinter", "std::string"),
-            ("Interpreter", "LoxObject")]
+            ("Print", [("std::unique_ptr<Expr>", "expression")]),
+            ("Var", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "initializer")]),
+            ]
+visitors = [
+            # ("ASTPrinter", "std::string"),
+            ("Interpreter", "LoxObject")
+            ]
 
 
 def defineAst(baseName, types, includes = []):

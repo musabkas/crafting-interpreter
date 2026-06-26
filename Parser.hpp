@@ -9,17 +9,20 @@ private:
     int current;
     std::vector<std::unique_ptr<Token>> tokens;
 
+    std::unique_ptr<Expr> expression();
+    std::unique_ptr<Expr> assignment();
     std::unique_ptr<Expr> equality();
     std::unique_ptr<Expr> comparison();
     std::unique_ptr<Expr> term();
     std::unique_ptr<Expr> factor();
     std::unique_ptr<Expr> unary();
     std::unique_ptr<Expr> primary();
-    std::unique_ptr<Expr> expression();
     std::unique_ptr<Stmt> statement();
     std::unique_ptr<Stmt> printStatement();
     std::unique_ptr<Stmt> expressionStatement();
-
+    std::unique_ptr<Stmt> declaration();
+    std::unique_ptr<Stmt> varDeclaration();
+    
     bool match(std::vector<TokenType> types);
 
     bool check(TokenType type);
