@@ -15,7 +15,6 @@ LoxObject Interpreter::evaluate(Expr* expression){
     return expression->acceptInterpreter(this);
 }
 
-
 LoxObject Interpreter::visitUnary(Unary* unary){
     LoxObject right = evaluate(unary->right.get());
     
@@ -28,6 +27,15 @@ LoxObject Interpreter::visitUnary(Unary* unary){
     }
     
     return LoxObject(std::in_place_type<void*>, nullptr);
+}
+
+void Interpreter::visitExpression(Expression* stmt){
+    evaluate(stmt->expression.get());
+}
+
+void Interpreter::visitPrint(Print* stmt){
+    LoxObject value = evaluate(stmt->expression.get());
+    std::cout << stringify(value) << std::endl;
 }
 
 void Interpreter::checkNumberOperand(Token op, LoxObject operand){
@@ -90,13 +98,18 @@ void Interpreter::checkNumberOperands(Token op, LoxObject left, LoxObject right)
     throw RuntimeError(op, "Operands must be numbers.");
 }
 
-void Interpreter::interpret(Expr* expression){
+void Interpreter::interpret(std::vector<std::unique_ptr<Stmt>> statements){
     try {
-        LoxObject value = evaluate(expression);
-        std::cout << stringify(value) << std::endl;
+        for (const std::unique_ptr<Stmt>& statement : statements) {
+            execute(statement.get());
+        }
     } catch (RuntimeError error) {
         Loxi::runtimeError(error);
     }
+}
+
+void Interpreter::execute(Stmt* stmt){
+    stmt->acceptInterpreter(this);
 }
 
 std::string Interpreter::stringify(LoxObject object){

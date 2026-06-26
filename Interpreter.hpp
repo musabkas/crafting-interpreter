@@ -1,8 +1,11 @@
 #pragma once
 #include "Expr.hpp"
+#include "Stmt.hpp"
+#include <vector>
 
 class Interpreter{
     LoxObject evaluate(Expr* expression);
+    void execute(Stmt* stmt);
     bool isTruthy(LoxObject object);
     bool isEqual(LoxObject a, LoxObject b);
 
@@ -18,5 +21,8 @@ public:
     LoxObject visitLiteral(Literal* literal);
     LoxObject visitUnary(Unary* unary);
 
-    void interpret(Expr* expression);
+    void visitExpression(Expression* stmt);
+    void visitPrint(Print* stmt);
+
+    void interpret(std::vector<std::unique_ptr<Stmt>> statements);
 };

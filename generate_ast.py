@@ -1,13 +1,14 @@
-baseName = "Expr"
 types = [("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
         ("Grouping", [("std::unique_ptr<Expr>", "expression")]),
         ("Literal", [("LoxObject", "value")]),
         ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")])]
+StmtTypes = [("Expression", [("std::unique_ptr<Expr>", "expression")]),
+            ("Print", [("std::unique_ptr<Expr>", "expression")])]
 visitors = [("ASTPrinter", "std::string"),
             ("Interpreter", "LoxObject")]
 
 
-def defineAst(baseName, types):
+def defineAst(baseName, types, includes = []):
     hppFile = open(baseName + ".hpp", "w")
     cppFile = open(baseName + ".cpp", "w")
 
@@ -17,6 +18,7 @@ def defineAst(baseName, types):
         '#include "Token.hpp"\n',
         '#include <string>\n',
         '#include <memory>\n',
+        *[f"#include {inc}" for inc in includes],
         "\n",
         "using LoxObject = std::variant<double, std::string, bool, void*>;\n",
         "\n",
@@ -24,7 +26,7 @@ def defineAst(baseName, types):
         "\n",
         f"class {baseName} {'{'}\n"
         "public:\n",
-        "\tvirtual ~Expr() = default;\n",
+        f"\tvirtual ~{baseName}() = default;\n",
     ])
 
     # visitors
@@ -33,7 +35,7 @@ def defineAst(baseName, types):
     hppFile.write("};\n\n")
 
     # cpp
-    cppFile.write('#include "Expr.hpp"\n')
+    cppFile.write(f'#include "{baseName}.hpp"\n')
     for visitor in visitors:
         cppFile.write(f'#include "{visitor[0]}.hpp"\n')
     cppFile.write('\n')
@@ -75,4 +77,7 @@ def defineType(hppFile, cppFile, baseName, className, fieldList):
         cppFile.write("}\n\n")
 
 
-defineAst(baseName, types)
+defineAst("Expr", types)
+visitors = [("Interpreter", "void")]
+includes = ['"Expr.hpp"']
+defineAst("Stmt", StmtTypes, includes)

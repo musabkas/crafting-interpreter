@@ -16,11 +16,11 @@ void Loxi::run(std::string source) {
     std::vector<std::unique_ptr<Token>> tokens = scanner->scanTokens();
 
     Parser parser (std::move(tokens));
-    std::unique_ptr<Expr> expression = std::move(parser.parse());
+    std::vector<std::unique_ptr<Stmt>> statements = std::move(parser.parse());
 
     if (hadError) return;
     
-    interpreter.interpret(expression.get());
+    interpreter.interpret(std::move(statements));
 }
 
 void Loxi::error(int line, std::string message){

@@ -40,6 +40,22 @@ Token Parser::previous(){
     return *tokens[current - 1];
 }
 
+std::unique_ptr<Stmt> Parser::statement(){
+    if (match({PRINT})) return std::move(printStatement());
+    return std::move(expressionStatement());
+}
+
+std::unique_ptr<Stmt> Parser::printStatement(){
+    std::unique_ptr<Expr> value = expression();
+    consume(SEMICOLON, "Expect ';' after value.");
+    return std::make_unique<Print> (std::move(value));
+}
+std::unique_ptr<Stmt> Parser::expressionStatement(){
+    std::unique_ptr<Expr> expr = expression();
+    consume(SEMICOLON, "Expect ';' after expression.");
+    return std::make_unique<Expression> (std::move(expr));
+}
+
 std::unique_ptr<Expr> Parser::expression(){
     return std::move(equality());
 }
@@ -153,10 +169,10 @@ void Parser::synchronize(){
     }
 }
 
-std::unique_ptr<Expr> Parser::parse(){
-    try {
-        return std::move(expression());
-    } catch (ParseError error) {
-        return nullptr;
+std::vector<std::unique_ptr<Stmt>> Parser::parse(){
+    std::vector<std::unique_ptr<Stmt>> statements = {};
+    while (!isAtEnd()){
+        statements.emplace_back(statement());
     }
+    return std::move(statements);
 }

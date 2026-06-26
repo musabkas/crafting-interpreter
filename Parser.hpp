@@ -1,6 +1,7 @@
 #pragma once
 #include "Token.hpp"
 #include "Expr.hpp"
+#include "Stmt.hpp"
 #include <vector>
 
 class Parser {
@@ -15,6 +16,9 @@ private:
     std::unique_ptr<Expr> unary();
     std::unique_ptr<Expr> primary();
     std::unique_ptr<Expr> expression();
+    std::unique_ptr<Stmt> statement();
+    std::unique_ptr<Stmt> printStatement();
+    std::unique_ptr<Stmt> expressionStatement();
 
     bool match(std::vector<TokenType> types);
 
@@ -36,5 +40,5 @@ private:
 
 public:
     Parser(std::vector<std::unique_ptr<Token>> tokens);
-    std::unique_ptr<Expr> parse();
+    std::vector<std::unique_ptr<Stmt>> parse();
 };
