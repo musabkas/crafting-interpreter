@@ -1,8 +1,8 @@
 #pragma once
+#include <vector>
 #include "Token.hpp"
 #include "Expr.hpp"
 #include "Stmt.hpp"
-#include <vector>
 
 class Parser {
 private:
@@ -22,6 +22,7 @@ private:
     std::unique_ptr<Stmt> expressionStatement();
     std::unique_ptr<Stmt> declaration();
     std::unique_ptr<Stmt> varDeclaration();
+    std::vector<std::unique_ptr<Stmt>> block();
     
     bool match(std::vector<TokenType> types);
 

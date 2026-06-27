@@ -1,14 +1,15 @@
 #pragma once
+#include <vector>
 #include "Expr.hpp"
 #include "Stmt.hpp"
 #include "Environment.hpp"
-#include <vector>
 
 class Interpreter{
-    Environment environment;
+    std::unique_ptr<Environment> environment;
 
     LoxObject evaluate(Expr* expression);
     void execute(Stmt* stmt);
+    void executeBlock(std::vector<std::unique_ptr<Stmt>> statements, std::unique_ptr<Environment> environment);
     bool isTruthy(LoxObject object);
     bool isEqual(LoxObject a, LoxObject b);
 
@@ -29,6 +30,7 @@ public:
     void visitExpression(Expression* stmt);
     void visitVar(Var* stmt);
     void visitPrint(Print* stmt);
+    void visitBlock(Block* stmt);
 
     void interpret(std::vector<std::unique_ptr<Stmt>> statements);
 };

@@ -1,5 +1,13 @@
 #include "Environment.hpp"
 
+Environment::Environment(){
+    enclosing = nullptr;
+}
+
+Environment::Environment(Environment* enclosing){
+    this->enclosing = enclosing;
+}
+
 void Environment::define(std::string name, LoxObject value){
     values[name] = value;
 }
@@ -7,6 +15,8 @@ void Environment::define(std::string name, LoxObject value){
 void Environment::assign(Token name, LoxObject value){
     if (values.count(name.lexeme)){
         values[name.lexeme] = value;
+    } else if (enclosing != nullptr) {
+        enclosing->assign(name, value);
     } else {
         throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
     }
@@ -16,6 +26,8 @@ LoxObject Environment::get(Token name){
     if (values.count(name.lexeme)){
         return values[name.lexeme];
     }
+
+    if (enclosing != nullptr) return enclosing->get(name);
 
     throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
 }

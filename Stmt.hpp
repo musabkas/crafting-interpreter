@@ -1,5 +1,6 @@
 #pragma once
 #include "Token.hpp"
+#include <vector>
 #include <string>
 #include <memory>
 #include "Expr.hpp"
@@ -35,6 +36,14 @@ public:
 	std::unique_ptr<Expr> initializer;
 
 	Var(std::unique_ptr<Token> name, std::unique_ptr<Expr> initializer);
+	void acceptInterpreter(Interpreter* visitor) override;
+};
+
+class Block : public Stmt {
+public:
+	std::vector<std::unique_ptr<Stmt>> statements;
+
+	Block(std::vector<std::unique_ptr<Stmt>> statements);
 	void acceptInterpreter(Interpreter* visitor) override;
 };
 

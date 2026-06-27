@@ -4,7 +4,7 @@
 #include <iostream>
 
 Interpreter::Interpreter(){
-    environment = Environment();
+    environment = std::make_unique<Environment>();
 }
 
 LoxObject Interpreter::visitLiteral(Literal* literal){
@@ -21,7 +21,7 @@ LoxObject Interpreter::evaluate(Expr* expression){
 
 LoxObject Interpreter::visitAssign(Assign* assign){
     LoxObject value = evaluate(assign->value.get());
-    environment.assign(*(assign->name), value);
+    environment->assign(*(assign->name), value);
     return value;
 }
 
@@ -80,7 +80,7 @@ LoxObject Interpreter::visitBinary(Binary* binary){
 }
 
 LoxObject Interpreter::visitVariable(Variable* var){
-    return environment.get(*(var->name));
+    return environment->get(*(var->name));
 }
 
 void Interpreter::visitExpression(Expression* stmt){
@@ -98,7 +98,28 @@ void Interpreter::visitVar(Var* stmt){
         value = evaluate(stmt->initializer.get());
     }
 
-    environment.define(stmt->name->lexeme, value);
+    environment->define(stmt->name->lexeme, value);
+}
+
+void Interpreter::visitBlock(Block* stmt){
+    executeBlock(std::move(stmt->statements), std::make_unique<Environment>(environment.get()));
+}
+
+void Interpreter::executeBlock(std::vector<std::unique_ptr<Stmt>> statements, std::unique_ptr<Environment> environment){
+    std::unique_ptr<Environment> previous = std::move(this->environment);
+    this->environment = std::move(environment);
+    auto cleanup = [this, &previous](){
+        this->environment = std::move(previous);
+    };
+
+    struct ScopeGuard{
+        std::function<void()> rollback;
+        ~ScopeGuard() { rollback(); }
+    } guard{cleanup};
+
+    for (const auto& statement : statements){
+        execute(statement.get());
+    }
 }
 
 void Interpreter::checkNumberOperand(Token op, LoxObject operand){

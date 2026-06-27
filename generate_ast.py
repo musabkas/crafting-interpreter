@@ -6,9 +6,11 @@ types = [
         ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]),
         ("Variable", [("std::unique_ptr<Token>", "name")]),
         ]
-StmtTypes = [("Expression", [("std::unique_ptr<Expr>", "expression")]),
+StmtTypes = [
+            ("Expression", [("std::unique_ptr<Expr>", "expression")]),
             ("Print", [("std::unique_ptr<Expr>", "expression")]),
             ("Var", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "initializer")]),
+            ("Block", [("std::vector<std::unique_ptr<Stmt>>", "statements")]),
             ]
 visitors = [
             # ("ASTPrinter", "std::string"),

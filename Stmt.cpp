@@ -26,3 +26,11 @@ void Var::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitVar(this);
 }
 
+Block::Block(std::vector<std::unique_ptr<Stmt>> statements){
+	this->statements = std::move(statements);
+}
+
+void Block::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitBlock(this);
+}
+
