@@ -9,6 +9,16 @@ void Expression::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitExpression(this);
 }
 
+If::If(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> thenBranch, std::unique_ptr<Stmt> elseBranch){
+	this->condition = std::move(condition);
+	this->thenBranch = std::move(thenBranch);
+	this->elseBranch = std::move(elseBranch);
+}
+
+void If::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitIf(this);
+}
+
 Print::Print(std::unique_ptr<Expr> expression){
 	this->expression = std::move(expression);
 }

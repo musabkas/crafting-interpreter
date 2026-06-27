@@ -8,6 +8,7 @@ types = [
         ]
 StmtTypes = [
             ("Expression", [("std::unique_ptr<Expr>", "expression")]),
+            ("If", [("std::unique_ptr<Expr>", "condition"), ("std::unique_ptr<Stmt>", "thenBranch"), ("std::unique_ptr<Stmt>", "elseBranch")]),
             ("Print", [("std::unique_ptr<Expr>", "expression")]),
             ("Var", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "initializer")]),
             ("Block", [("std::vector<std::unique_ptr<Stmt>>", "statements")]),
@@ -28,7 +29,7 @@ def defineAst(baseName, types, includes = []):
         '#include "Token.hpp"\n',
         '#include <string>\n',
         '#include <memory>\n',
-        *[f"#include {inc}" for inc in includes],
+        *[f"#include {inc}\n" for inc in includes],
         "\n",
         "using LoxObject = std::variant<double, std::string, bool, void*>;\n",
         "\n",
@@ -89,5 +90,5 @@ def defineType(hppFile, cppFile, baseName, className, fieldList):
 
 defineAst("Expr", types)
 visitors = [("Interpreter", "void")]
-includes = ['"Expr.hpp"']
+includes = ["<vector>", '"Expr.hpp"']
 defineAst("Stmt", StmtTypes, includes)

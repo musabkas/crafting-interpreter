@@ -42,6 +42,7 @@ Token Parser::previous(){
 }
 
 std::unique_ptr<Stmt> Parser::statement(){
+    if (match({IF})) return std::move(ifStatement());
     if (match({PRINT})) return std::move(printStatement());
     if (match({LEFT_BRACE})) return std::make_unique<Block> (block());
     return std::move(expressionStatement());
@@ -67,6 +68,20 @@ std::unique_ptr<Stmt> Parser::varDeclaration(){
 
     consume(SEMICOLON, "Expect ';' after variable declaration.");
     return std::make_unique<Var>(std::move(name), std::move(initializer));
+}
+
+std::unique_ptr<Stmt> Parser::ifStatement(){
+    consume(LEFT_PAREN, "Expect '(' after 'if'.");
+    std::unique_ptr<Expr> condition = expression();
+    consume(RIGHT_PAREN, "Expect ')' after if.");
+
+    std::unique_ptr<Stmt> thenBranch = statement();
+    std::unique_ptr<Stmt> elseBranch = nullptr;
+    if (match({ELSE})){
+        elseBranch = statement();
+    }
+
+    return std::make_unique<If>(std::move(condition), std::move(thenBranch), std::move(elseBranch));
 }
 
 std::unique_ptr<Stmt> Parser::printStatement(){

@@ -28,6 +28,7 @@ public:
     LoxObject visitVariable(Variable* var);
 
     void visitExpression(Expression* stmt);
+    void visitIf(If* stmt);
     void visitVar(Var* stmt);
     void visitPrint(Print* stmt);
     void visitBlock(Block* stmt);

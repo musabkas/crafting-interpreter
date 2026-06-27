@@ -87,6 +87,14 @@ void Interpreter::visitExpression(Expression* stmt){
     evaluate(stmt->expression.get());
 }
 
+void Interpreter::visitIf(If* stmt){
+    if (isTruthy(evaluate(stmt->condition.get()))) {
+        execute(stmt->thenBranch.get());
+    } else if (stmt->elseBranch){
+        execute(stmt->elseBranch.get());
+    }
+}
+
 void Interpreter::visitPrint(Print* stmt){
     LoxObject value = evaluate(stmt->expression.get());
     std::cout << stringify(value) << std::endl;

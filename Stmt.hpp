@@ -1,9 +1,10 @@
 #pragma once
 #include "Token.hpp"
-#include <vector>
 #include <string>
 #include <memory>
+#include <vector>
 #include "Expr.hpp"
+
 using LoxObject = std::variant<double, std::string, bool, void*>;
 
 class Interpreter;
@@ -19,6 +20,16 @@ public:
 	std::unique_ptr<Expr> expression;
 
 	Expression(std::unique_ptr<Expr> expression);
+	void acceptInterpreter(Interpreter* visitor) override;
+};
+
+class If : public Stmt {
+public:
+	std::unique_ptr<Expr> condition;
+	std::unique_ptr<Stmt> thenBranch;
+	std::unique_ptr<Stmt> elseBranch;
+
+	If(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> thenBranch, std::unique_ptr<Stmt> elseBranch);
 	void acceptInterpreter(Interpreter* visitor) override;
 };
 
