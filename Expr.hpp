@@ -22,6 +22,16 @@ public:
 	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 
+class Logical : public Expr {
+public:
+	std::unique_ptr<Expr> left;
+	std::unique_ptr<Token> op;
+	std::unique_ptr<Expr> right;
+
+	Logical(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
+};
+
 class Binary : public Expr {
 public:
 	std::unique_ptr<Expr> left;

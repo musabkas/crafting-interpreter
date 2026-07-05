@@ -21,6 +21,7 @@ class Interpreter{
 public:
     Interpreter();
     LoxObject visitAssign(Assign* assign);
+    LoxObject visitLogical(Logical* logical);
     LoxObject visitBinary(Binary* binary);
     LoxObject visitGrouping(Grouping* grouping);
     LoxObject visitLiteral(Literal* literal);

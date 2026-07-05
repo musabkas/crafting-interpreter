@@ -10,6 +10,16 @@ LoxObject Assign::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitAssign(this);
 }
 
+Logical::Logical(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right){
+	this->left = std::move(left);
+	this->op = std::move(op);
+	this->right = std::move(right);
+}
+
+LoxObject Logical::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitLogical(this);
+}
+
 Binary::Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right){
 	this->left = std::move(left);
 	this->op = std::move(op);

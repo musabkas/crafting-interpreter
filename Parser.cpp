@@ -112,7 +112,7 @@ std::unique_ptr<Expr> Parser::expression(){
 }
 
 std::unique_ptr<Expr> Parser::assignment(){
-    std::unique_ptr<Expr> expr = std::move(equality());
+    std::unique_ptr<Expr> expr = std::move(orExpr());
 
     if (match({EQUAL})) {
         std::unique_ptr<Token> equals = std::make_unique<Token>(previous());
@@ -128,6 +128,29 @@ std::unique_ptr<Expr> Parser::assignment(){
 
     return std::move(expr);
 }
+
+std::unique_ptr<Expr> Parser::orExpr(){
+    std::unique_ptr<Expr> expr = std::move(andExpr());
+
+    while (match({OR})) {
+        std::unique_ptr<Token> op = std::make_unique<Token>(previous());
+        std::unique_ptr<Expr> right = std::move(andExpr());
+        expr = std::make_unique<Logical>(std::move(expr), std::move(op), std::move(right));
+    }
+    return std::move(expr);
+}
+
+std::unique_ptr<Expr> Parser::andExpr(){
+    std::unique_ptr<Expr> expr = std::move(equality());
+
+    while (match({AND})) {
+        std::unique_ptr<Token> op = std::make_unique<Token>(previous());
+        std::unique_ptr<Expr> right = std::move(equality());
+        expr = std::make_unique<Logical>(std::move(expr), std::move(op), std::move(right));
+    }
+    return std::move(expr);
+}
+
 
 std::unique_ptr<Expr> Parser::equality(){
     std::unique_ptr<Expr> expr = std::move(comparison());

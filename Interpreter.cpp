@@ -39,6 +39,18 @@ LoxObject Interpreter::visitUnary(Unary* unary){
     return LoxObject(std::in_place_type<void*>, nullptr);
 }
 
+LoxObject Interpreter::visitLogical(Logical* logical){
+    LoxObject left = evaluate(logical->left.get());
+
+    if (logical->op->type == OR) {
+        if (isTruthy(left)) return left;
+    } else {
+        if (!isTruthy(left)) return left;
+    }
+
+    return evaluate(logical->right.get());
+}
+
 LoxObject Interpreter::visitBinary(Binary* binary){
     LoxObject left = evaluate(binary->left.get());
     LoxObject right = evaluate(binary->right.get());
