@@ -42,6 +42,7 @@ Token Parser::previous(){
 }
 
 std::unique_ptr<Stmt> Parser::statement(){
+    if (match({FOR})) return std::move(forStatement());
     if (match({IF})) return std::move(ifStatement());
     if (match({PRINT})) return std::move(printStatement());
     if (match({WHILE})) return std::move(whileStatement());
@@ -93,6 +94,51 @@ std::unique_ptr<Stmt> Parser::whileStatement(){
     std::unique_ptr<Stmt> body = statement();
 
     return std::make_unique<While>(std::move(condition), std::move(body));
+}
+
+std::unique_ptr<Stmt> Parser::forStatement(){
+    consume(LEFT_PAREN, "Expect '(' after 'for'.");
+    std::unique_ptr<Stmt> initializer;
+    if (match({SEMICOLON})) {
+        initializer = nullptr;
+    } else if (match({VAR})) {
+        initializer = varDeclaration();
+    } else {
+        initializer = expressionStatement();
+    }
+
+    std::unique_ptr<Expr> condition = nullptr;
+    if (!check(SEMICOLON)) {
+        condition = expression();
+    }
+    consume(SEMICOLON, "Expect ';' after loop condition.");
+
+    std::unique_ptr<Expr> increment = nullptr;
+    if (!check(RIGHT_PAREN)) {
+        increment = expression();
+    }
+    consume(RIGHT_PAREN, "Expect ')' after for clauses.");
+
+    std::unique_ptr<Stmt> body = statement();
+
+    if (increment != nullptr) {
+        std::vector<std::unique_ptr<Stmt>> statements;
+        statements.emplace_back(std::move(body));
+        statements.emplace_back(std::make_unique<Expression>(std::move(increment)));
+        body = std::make_unique<Block>(std::move(statements));
+    }
+
+    if (condition == nullptr) condition = std::make_unique<Literal>(LoxObject(std::in_place_type<bool>, true));
+    body = std::make_unique<While>(std::move(condition), std::move(body));
+
+    if (initializer != nullptr) {
+        std::vector<std::unique_ptr<Stmt>> statements;
+        statements.emplace_back(std::move(initializer));
+        statements.emplace_back(std::move(body));
+        body = std::make_unique<Block>(std::move(statements));
+    }
+
+    return std::move(body);
 }
 
 std::unique_ptr<Stmt> Parser::printStatement(){
