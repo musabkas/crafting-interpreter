@@ -1,4 +1,5 @@
 #include "Environment.hpp"
+#include <iostream>
 
 Environment::Environment(){
     enclosing = nullptr;

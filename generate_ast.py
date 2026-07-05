@@ -12,6 +12,7 @@ StmtTypes = [
             ("If", [("std::unique_ptr<Expr>", "condition"), ("std::unique_ptr<Stmt>", "thenBranch"), ("std::unique_ptr<Stmt>", "elseBranch")]),
             ("Print", [("std::unique_ptr<Expr>", "expression")]),
             ("Var", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "initializer")]),
+            ("While", [("std::unique_ptr<Expr>", "condition"), ("std::unique_ptr<Stmt>", "body")]),
             ("Block", [("std::vector<std::unique_ptr<Stmt>>", "statements")]),
             ]
 visitors = [

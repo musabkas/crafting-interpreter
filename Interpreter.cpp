@@ -107,6 +107,12 @@ void Interpreter::visitIf(If* stmt){
     }
 }
 
+void Interpreter::visitWhile(While* stmt){
+    while (isTruthy(evaluate(stmt->condition.get()))) {
+        execute(stmt->body.get());
+    }
+}
+
 void Interpreter::visitPrint(Print* stmt){
     LoxObject value = evaluate(stmt->expression.get());
     std::cout << stringify(value) << std::endl;
@@ -122,10 +128,10 @@ void Interpreter::visitVar(Var* stmt){
 }
 
 void Interpreter::visitBlock(Block* stmt){
-    executeBlock(std::move(stmt->statements), std::make_unique<Environment>(environment.get()));
+    executeBlock(stmt->statements, std::make_unique<Environment>(environment.get()));
 }
 
-void Interpreter::executeBlock(std::vector<std::unique_ptr<Stmt>> statements, std::unique_ptr<Environment> environment){
+void Interpreter::executeBlock(std::vector<std::unique_ptr<Stmt>>& statements, std::unique_ptr<Environment> environment){
     std::unique_ptr<Environment> previous = std::move(this->environment);
     this->environment = std::move(environment);
     auto cleanup = [this, &previous](){

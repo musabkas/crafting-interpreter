@@ -1,2 +1,5 @@
-if (nil and nil) print "hi";
-else print "test";
+var x = 0;
+while (x < 5) {
+    print "hi";
+    x = x + 1;
+}

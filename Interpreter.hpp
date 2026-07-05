@@ -9,7 +9,7 @@ class Interpreter{
 
     LoxObject evaluate(Expr* expression);
     void execute(Stmt* stmt);
-    void executeBlock(std::vector<std::unique_ptr<Stmt>> statements, std::unique_ptr<Environment> environment);
+    void executeBlock(std::vector<std::unique_ptr<Stmt>>& statements, std::unique_ptr<Environment> environment);
     bool isTruthy(LoxObject object);
     bool isEqual(LoxObject a, LoxObject b);
 
@@ -30,6 +30,7 @@ public:
 
     void visitExpression(Expression* stmt);
     void visitIf(If* stmt);
+    void visitWhile(While* stmt);
     void visitVar(Var* stmt);
     void visitPrint(Print* stmt);
     void visitBlock(Block* stmt);

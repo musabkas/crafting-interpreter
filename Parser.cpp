@@ -44,6 +44,7 @@ Token Parser::previous(){
 std::unique_ptr<Stmt> Parser::statement(){
     if (match({IF})) return std::move(ifStatement());
     if (match({PRINT})) return std::move(printStatement());
+    if (match({WHILE})) return std::move(whileStatement());
     if (match({LEFT_BRACE})) return std::make_unique<Block> (block());
     return std::move(expressionStatement());
 }
@@ -82,6 +83,16 @@ std::unique_ptr<Stmt> Parser::ifStatement(){
     }
 
     return std::make_unique<If>(std::move(condition), std::move(thenBranch), std::move(elseBranch));
+}
+
+std::unique_ptr<Stmt> Parser::whileStatement(){
+    consume(LEFT_PAREN, "Expect '(' after 'while'.");
+    std::unique_ptr<Expr> condition = expression();
+    consume(RIGHT_PAREN, "Expect ')' after while.");
+
+    std::unique_ptr<Stmt> body = statement();
+
+    return std::make_unique<While>(std::move(condition), std::move(body));
 }
 
 std::unique_ptr<Stmt> Parser::printStatement(){

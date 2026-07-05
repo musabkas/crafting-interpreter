@@ -44,6 +44,15 @@ void Var::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitVar(this);
 }
 
+While::While(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body){
+	this->condition = std::move(condition);
+	this->body = std::move(body);
+}
+
+void While::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitWhile(this);
+}
+
 Block::Block(std::vector<std::unique_ptr<Stmt>> statements){
 	this->statements = std::move(statements);
 }

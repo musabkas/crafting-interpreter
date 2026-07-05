@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <iostream>
 #include "Expr.hpp"
 
 using LoxObject = std::variant<double, std::string, bool, void*>;
@@ -47,6 +48,15 @@ public:
 	std::unique_ptr<Expr> initializer;
 
 	Var(std::unique_ptr<Token> name, std::unique_ptr<Expr> initializer);
+	void acceptInterpreter(Interpreter* visitor) override;
+};
+
+class While : public Stmt {
+public:
+	std::unique_ptr<Expr> condition;
+	std::unique_ptr<Stmt> body;
+
+	While(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body);
 	void acceptInterpreter(Interpreter* visitor) override;
 };
 

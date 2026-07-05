@@ -2,3 +2,4 @@
 .vscode/
 *.plist
 loxi.out.dSYM/
+.DS_Store
