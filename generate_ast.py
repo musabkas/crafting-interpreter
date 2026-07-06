@@ -2,6 +2,7 @@ types = [
         ("Assign", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "value")]), 
         ("Logical", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
         ("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
+        ("Call", [("std::unique_ptr<Expr>", "callee"), ("std::unique_ptr<Token>", "paren"), ("std::vector<std::unique_ptr<Expr>>", "arguments")]), 
         ("Grouping", [("std::unique_ptr<Expr>", "expression")]),
         ("Literal", [("LoxObject", "value")]),
         ("Unary", [("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]),
@@ -21,7 +22,7 @@ visitors = [
             ]
 
 
-def defineAst(baseName, types, includes = []):
+def defineAst(baseName, types, includes = [], loxObjDef = True):
     hppFile = open(baseName + ".hpp", "w")
     cppFile = open(baseName + ".cpp", "w")
 
@@ -33,8 +34,7 @@ def defineAst(baseName, types, includes = []):
         '#include <memory>\n',
         *[f"#include {inc}\n" for inc in includes],
         "\n",
-        "using LoxObject = std::variant<double, std::string, bool, void*>;\n",
-        "\n",
+        ("class LoxCallable;\nusing LoxObject = std::variant<double, std::string, bool, LoxCallable, void*>;\n\n") if loxObjDef else "",
         *[f'class {visitor[0]};\n' for visitor in visitors],
         "\n",
         f"class {baseName} {'{'}\n"
@@ -90,7 +90,8 @@ def defineType(hppFile, cppFile, baseName, className, fieldList):
         cppFile.write("}\n\n")
 
 
-defineAst("Expr", types)
+includes = ["<vector>"]
+defineAst("Expr", types, includes)
 visitors = [("Interpreter", "void")]
 includes = ["<vector>", '"Expr.hpp"']
-defineAst("Stmt", StmtTypes, includes)
+defineAst("Stmt", StmtTypes, includes, False)

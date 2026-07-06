@@ -26,6 +26,7 @@ public:
     LoxObject visitGrouping(Grouping* grouping);
     LoxObject visitLiteral(Literal* literal);
     LoxObject visitUnary(Unary* unary);
+    LoxObject visitCall(Call* call);
     LoxObject visitVariable(Variable* var);
 
     void visitExpression(Expression* stmt);

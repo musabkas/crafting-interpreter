@@ -30,6 +30,16 @@ LoxObject Binary::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitBinary(this);
 }
 
+Call::Call(std::unique_ptr<Expr> callee, std::unique_ptr<Token> paren, std::vector<std::unique_ptr<Expr>> arguments){
+	this->callee = std::move(callee);
+	this->paren = std::move(paren);
+	this->arguments = std::move(arguments);
+}
+
+LoxObject Call::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitCall(this);
+}
+
 Grouping::Grouping(std::unique_ptr<Expr> expression){
 	this->expression = std::move(expression);
 }

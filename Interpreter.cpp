@@ -1,10 +1,23 @@
 #include "Interpreter.hpp"
 #include "RuntimeError.hpp"
+#include "LoxCallable.hpp"
 #include "Loxi.hpp"
 #include <iostream>
 
 Interpreter::Interpreter(){
     environment = std::make_unique<Environment>();
+    Environment* globals = environment.get(); // get a duplicate pointer
+
+    struct ClockCallable : LoxCallable {
+        int arity() override { return 0; }
+        LoxObject call(Interpreter* interpreter, std::vector<LoxObject> arguments) override {
+            auto now = std::chrono::system_clock::now().time_since_epoch();
+            return LoxObject(std::in_place_type<double>, std::chrono::duration_cast<std::chrono::milliseconds>(now).count() / 1000.0);
+        };
+        std::string toString() { return "<native fn>"; }
+    };
+
+    globals->define("clock", LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, std::make_shared<ClockCallable>()));
 }
 
 LoxObject Interpreter::visitLiteral(Literal* literal){
@@ -37,6 +50,23 @@ LoxObject Interpreter::visitUnary(Unary* unary){
     }
     
     return LoxObject(std::in_place_type<void*>, nullptr);
+}
+
+LoxObject Interpreter::visitCall(Call* call){
+    LoxObject callee = evaluate(call->callee.get());
+    std::vector<LoxObject> arguments = {};
+    for (auto& argument : call->arguments){
+        arguments.emplace_back(evaluate(argument.get()));
+    }
+
+    if (!(std::holds_alternative<std::shared_ptr<LoxCallable>>(callee))) {
+        throw RuntimeError(*call->paren, "Can only call functions and classes.");
+    }
+    std::shared_ptr<LoxCallable> function = std::get<std::shared_ptr<LoxCallable>>(callee);
+    if (arguments.size() != function->arity()){
+        throw RuntimeError(*call->paren, "Expected " + std::to_string(function->arity()) + " arguments but got " + std::to_string(arguments.size()) + ".");
+    }
+    return function->call(this, arguments);
 }
 
 LoxObject Interpreter::visitLogical(Logical* logical){

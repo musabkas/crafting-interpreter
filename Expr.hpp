@@ -2,8 +2,10 @@
 #include "Token.hpp"
 #include <string>
 #include <memory>
+#include <vector>
 
-using LoxObject = std::variant<double, std::string, bool, void*>;
+class LoxCallable;
+using LoxObject = std::variant<double, std::string, bool, std::shared_ptr<LoxCallable>, void*>;
 
 class Interpreter;
 
@@ -39,6 +41,16 @@ public:
 	std::unique_ptr<Expr> right;
 
 	Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right);
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
+};
+
+class Call : public Expr {
+public:
+	std::unique_ptr<Expr> callee;
+	std::unique_ptr<Token> paren;
+	std::vector<std::unique_ptr<Expr>> arguments;
+
+	Call(std::unique_ptr<Expr> callee, std::unique_ptr<Token> paren, std::vector<std::unique_ptr<Expr>> arguments);
 	LoxObject acceptInterpreter(Interpreter* visitor) override;
 };
 

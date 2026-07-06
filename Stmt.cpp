@@ -1,14 +1,6 @@
 #include "Stmt.hpp"
 #include "Interpreter.hpp"
 
-std::ostream& operator<<(std::ostream& os, const LoxObject& obj) {
-	if (std::holds_alternative<double>(obj)) os << std::get<double>(obj);
-	if (std::holds_alternative<std::string>(obj)) os << std::get<std::string>(obj);
-	if (std::holds_alternative<bool>(obj)) os << std::get<bool>(obj);
-	if (std::holds_alternative<void*>(obj)) os << "nil";
-    return os;
-}
-
 Expression::Expression(std::unique_ptr<Expr> expression){
 	this->expression = std::move(expression);
 }

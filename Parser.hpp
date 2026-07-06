@@ -18,6 +18,8 @@ private:
     std::unique_ptr<Expr> term();
     std::unique_ptr<Expr> factor();
     std::unique_ptr<Expr> unary();
+    std::unique_ptr<Expr> call();
+    std::unique_ptr<Expr> finishCall(std::unique_ptr<Expr> expr);
     std::unique_ptr<Expr> primary();
     std::unique_ptr<Stmt> statement();
     std::unique_ptr<Stmt> ifStatement();

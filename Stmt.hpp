@@ -3,10 +3,7 @@
 #include <string>
 #include <memory>
 #include <vector>
-#include <iostream>
 #include "Expr.hpp"
-
-using LoxObject = std::variant<double, std::string, bool, void*>;
 
 class Interpreter;
 
