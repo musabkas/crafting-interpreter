@@ -1,5 +1,6 @@
 #include "Expr.hpp"
 #include "Interpreter.hpp"
+#include "Resolver.hpp"
 
 Assign::Assign(std::unique_ptr<Token> name, std::unique_ptr<Expr> value){
 	this->name = std::move(name);
@@ -7,6 +8,10 @@ Assign::Assign(std::unique_ptr<Token> name, std::unique_ptr<Expr> value){
 }
 
 LoxObject Assign::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitAssign(this);
+}
+
+void Assign::acceptResolver(Resolver* visitor){
 	return visitor->visitAssign(this);
 }
 
@@ -20,6 +25,10 @@ LoxObject Logical::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitLogical(this);
 }
 
+void Logical::acceptResolver(Resolver* visitor){
+	return visitor->visitLogical(this);
+}
+
 Binary::Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right){
 	this->left = std::move(left);
 	this->op = std::move(op);
@@ -27,6 +36,10 @@ Binary::Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::uniqu
 }
 
 LoxObject Binary::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitBinary(this);
+}
+
+void Binary::acceptResolver(Resolver* visitor){
 	return visitor->visitBinary(this);
 }
 
@@ -40,6 +53,10 @@ LoxObject Call::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitCall(this);
 }
 
+void Call::acceptResolver(Resolver* visitor){
+	return visitor->visitCall(this);
+}
+
 Grouping::Grouping(std::unique_ptr<Expr> expression){
 	this->expression = std::move(expression);
 }
@@ -48,11 +65,19 @@ LoxObject Grouping::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitGrouping(this);
 }
 
+void Grouping::acceptResolver(Resolver* visitor){
+	return visitor->visitGrouping(this);
+}
+
 Literal::Literal(LoxObject value){
 	this->value = value;
 }
 
 LoxObject Literal::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitLiteral(this);
+}
+
+void Literal::acceptResolver(Resolver* visitor){
 	return visitor->visitLiteral(this);
 }
 
@@ -65,11 +90,19 @@ LoxObject Unary::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitUnary(this);
 }
 
+void Unary::acceptResolver(Resolver* visitor){
+	return visitor->visitUnary(this);
+}
+
 Variable::Variable(std::unique_ptr<Token> name){
 	this->name = std::move(name);
 }
 
 LoxObject Variable::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitVariable(this);
+}
+
+void Variable::acceptResolver(Resolver* visitor){
 	return visitor->visitVariable(this);
 }
 

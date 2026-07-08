@@ -7,6 +7,7 @@
 Interpreter::Interpreter(){
     environment = std::make_shared<Environment>();
     globals = environment;
+    locals = {};
 
     struct ClockCallable : LoxCallable {
         int arity() override { return 0; }
@@ -34,7 +35,11 @@ LoxObject Interpreter::evaluate(Expr* expression){
 
 LoxObject Interpreter::visitAssign(Assign* assign){
     LoxObject value = evaluate(assign->value.get());
-    environment->assign(*(assign->name), value);
+    if (locals.count(assign)) {
+        environment->assignAt(locals[assign], *(assign->name), value);
+    } else {
+        globals->assign(*(assign->name), value);
+    }
     return value;
 }
 
@@ -122,7 +127,15 @@ LoxObject Interpreter::visitBinary(Binary* binary){
 }
 
 LoxObject Interpreter::visitVariable(Variable* var){
-    return environment->get(*(var->name));
+    return lookUpVariable(*var->name, var);
+}
+
+LoxObject Interpreter::lookUpVariable(Token name, Expr* expr){
+    if (locals.count(expr)) {
+        return environment->getAt(locals[expr], name.lexeme);
+    } else {
+        return globals->get(name);
+    }
 }
 
 void Interpreter::visitExpression(Expression* stmt){
@@ -221,6 +234,10 @@ void Interpreter::interpret(std::vector<std::unique_ptr<Stmt>> statements){
 
 void Interpreter::execute(Stmt* stmt){
     stmt->acceptInterpreter(this);
+}
+
+void Interpreter::resolve(Expr* expr, int depth){
+    locals[expr] = depth;
 }
 
 std::string Interpreter::stringify(LoxObject object){

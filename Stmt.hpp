@@ -6,11 +6,13 @@
 #include "Expr.hpp"
 
 class Interpreter;
+class Resolver;
 
 class Stmt {
 public:
 	virtual ~Stmt() = default;
 	virtual void acceptInterpreter(Interpreter* visitor) = 0;
+	virtual void acceptResolver(Resolver* visitor) = 0;
 };
 
 class Expression : public Stmt {
@@ -19,6 +21,7 @@ public:
 
 	Expression(std::unique_ptr<Expr> expression);
 	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
 };
 
 class If : public Stmt {
@@ -29,6 +32,7 @@ public:
 
 	If(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> thenBranch, std::unique_ptr<Stmt> elseBranch);
 	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
 };
 
 class Print : public Stmt {
@@ -37,6 +41,7 @@ public:
 
 	Print(std::unique_ptr<Expr> expression);
 	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
 };
 
 class Return : public Stmt {
@@ -46,6 +51,7 @@ public:
 
 	Return(std::unique_ptr<Token> keyword, std::unique_ptr<Expr> value);
 	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
 };
 
 class Var : public Stmt {
@@ -55,6 +61,7 @@ public:
 
 	Var(std::unique_ptr<Token> name, std::unique_ptr<Expr> initializer);
 	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
 };
 
 class Function : public Stmt {
@@ -65,6 +72,7 @@ public:
 
 	Function(std::unique_ptr<Token> name, std::vector<std::unique_ptr<Token>> params, std::vector<std::unique_ptr<Stmt>> body);
 	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
 };
 
 class While : public Stmt {
@@ -74,6 +82,7 @@ public:
 
 	While(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body);
 	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
 };
 
 class Block : public Stmt {
@@ -82,5 +91,6 @@ public:
 
 	Block(std::vector<std::unique_ptr<Stmt>> statements);
 	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
 };
 

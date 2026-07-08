@@ -23,6 +23,10 @@ void Environment::assign(Token name, LoxObject value){
     }
 }
 
+void Environment::assignAt(int distance, Token name, LoxObject value){
+    ancestor(distance)->values[name.lexeme] = value;
+}
+
 LoxObject Environment::get(Token name){
     if (values.count(name.lexeme)){
         return values[name.lexeme];
@@ -31,4 +35,16 @@ LoxObject Environment::get(Token name){
     if (enclosing != nullptr) return enclosing->get(name);
 
     throw RuntimeError(name, "Undefined variable '" + name.lexeme + "'.");
+}
+
+LoxObject Environment::getAt(int distance, std::string name){
+    return ancestor(distance)->values[name];
+}
+
+Environment* Environment::ancestor(int distance){
+    Environment* environment = this;
+    for (int i = 0; i < distance; i++) {
+        environment = environment->enclosing.get();
+    }
+    return environment;
 }

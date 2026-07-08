@@ -20,7 +20,8 @@ StmtTypes = [
             ]
 visitors = [
             # ("ASTPrinter", "std::string"),
-            ("Interpreter", "LoxObject")
+            ("Interpreter", "LoxObject"),
+            ("Resolver", "void")
             ]
 
 
@@ -94,6 +95,9 @@ def defineType(hppFile, cppFile, baseName, className, fieldList):
 
 includes = ["<vector>"]
 defineAst("Expr", types, includes)
-visitors = [("Interpreter", "void")]
+visitors = [
+            ("Interpreter", "void"),
+            ("Resolver", "void")
+            ]
 includes = ["<vector>", '"Expr.hpp"']
 defineAst("Stmt", StmtTypes, includes, False)

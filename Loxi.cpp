@@ -5,6 +5,7 @@
 #include "Parser.hpp"
 #include "Loxi.hpp"
 #include "ASTPrinter.hpp"
+#include "Resolver.hpp"
 
 bool Loxi::hadError = false;
 bool Loxi::hadRuntimeError = false;
@@ -19,6 +20,9 @@ void Loxi::run(std::string source) {
     std::vector<std::unique_ptr<Stmt>> statements = std::move(parser.parse());
 
     if (hadError) return;
+
+    Resolver resolver = Resolver(&interpreter);
+    resolver.resolve(statements);
     
     interpreter.interpret(std::move(statements));
 }
