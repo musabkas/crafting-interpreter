@@ -20,9 +20,11 @@ void Loxi::run(std::string source) {
     std::vector<std::unique_ptr<Stmt>> statements = std::move(parser.parse());
 
     if (hadError) return;
-
+    
     Resolver resolver = Resolver(&interpreter);
     resolver.resolve(statements);
+    
+    if (hadError) return;
     
     interpreter.interpret(std::move(statements));
 }

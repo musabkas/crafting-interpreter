@@ -4,6 +4,7 @@
 Resolver::Resolver(Interpreter* interpreter){
     this->interpreter = interpreter;
     scopes = {};
+    currentFunction = NONE;
 }
 
 void Resolver::visitBlock(Block* stmt){
@@ -75,7 +76,7 @@ void Resolver::visitFunction(Function* stmt) {
     declare(*stmt->name);
     define(*stmt->name);
 
-    resolveFunction(stmt);
+    resolveFunction(stmt, FUNCTION);
 }
 
 void Resolver::visitIf(If* stmt) {
@@ -89,6 +90,10 @@ void Resolver::visitPrint(Print* stmt){
 }
 
 void Resolver::visitReturn(Return* stmt){
+    if (currentFunction == NONE) {
+        Loxi::error(*stmt->keyword, "Can't return from top-level code.");
+    }
+
     if (stmt->value != nullptr){
         resolve(stmt->value);
     }
@@ -109,7 +114,10 @@ void Resolver::resolve(std::unique_ptr<Expr>& expr){
     expr->acceptResolver(this);
 }
 
-void Resolver::resolveFunction(Function* function) {
+void Resolver::resolveFunction(Function* function, FunctionType type) {
+    FunctionType enclosingFunction = currentFunction;
+    currentFunction = type;
+
     beginScope();
     for (auto& param : function->params){
         declare(*param);
@@ -117,6 +125,7 @@ void Resolver::resolveFunction(Function* function) {
     }
     resolve(function->body);
     endScope();
+    currentFunction = enclosingFunction;
 }
 
 void Resolver::beginScope(){
@@ -129,7 +138,9 @@ void Resolver::endScope(){
 
 void Resolver::declare(Token name){
     if (scopes.empty()) return;
-
+    if (scopes.back().count(name.lexeme)) {
+        Loxi::error(name, "Already a variable with this name in this scope.");
+    }
     scopes.back()[name.lexeme] = false;
 }
 

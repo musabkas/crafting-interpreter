@@ -1,15 +1,21 @@
 #pragma once
 #include "Interpreter.hpp"
 
+enum FunctionType{
+    NONE,
+    FUNCTION
+};
+
 class Resolver{
     Interpreter* interpreter;
     std::vector<std::unordered_map<std::string, bool>> scopes;
+    FunctionType currentFunction;
 
     void resolve(std::unique_ptr<Stmt>& stmt);
     void resolve(std::unique_ptr<Expr>& expr);
     
     void resolveLocal(Expr* expr, Token name);
-    void resolveFunction(Function* function);
+    void resolveFunction(Function* function, FunctionType type);
     
     void beginScope();
     void endScope();
