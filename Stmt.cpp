@@ -27,6 +27,15 @@ void Print::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitPrint(this);
 }
 
+Return::Return(std::unique_ptr<Token> keyword, std::unique_ptr<Expr> value){
+	this->keyword = std::move(keyword);
+	this->value = std::move(value);
+}
+
+void Return::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitReturn(this);
+}
+
 Var::Var(std::unique_ptr<Token> name, std::unique_ptr<Expr> initializer){
 	this->name = std::move(name);
 	this->initializer = std::move(initializer);

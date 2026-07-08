@@ -39,6 +39,15 @@ public:
 	void acceptInterpreter(Interpreter* visitor) override;
 };
 
+class Return : public Stmt {
+public:
+	std::unique_ptr<Token> keyword;
+	std::unique_ptr<Expr> value;
+
+	Return(std::unique_ptr<Token> keyword, std::unique_ptr<Expr> value);
+	void acceptInterpreter(Interpreter* visitor) override;
+};
+
 class Var : public Stmt {
 public:
 	std::unique_ptr<Token> name;

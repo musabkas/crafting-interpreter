@@ -12,6 +12,7 @@ StmtTypes = [
             ("Expression", [("std::unique_ptr<Expr>", "expression")]),
             ("If", [("std::unique_ptr<Expr>", "condition"), ("std::unique_ptr<Stmt>", "thenBranch"), ("std::unique_ptr<Stmt>", "elseBranch")]),
             ("Print", [("std::unique_ptr<Expr>", "expression")]),
+            ("Return", [("std::unique_ptr<Token>", "keyword"), ("std::unique_ptr<Expr>", "value")]),
             ("Var", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "initializer")]),
             ("Function", [("std::unique_ptr<Token>", "name"), ("std::vector<std::unique_ptr<Token>>", "params"), ("std::vector<std::unique_ptr<Stmt>>", "body")]),
             ("While", [("std::unique_ptr<Expr>", "condition"), ("std::unique_ptr<Stmt>", "body")]),

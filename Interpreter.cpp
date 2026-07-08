@@ -143,6 +143,12 @@ void Interpreter::visitWhile(While* stmt){
     }
 }
 
+void Interpreter::visitReturn(Return* stmt){
+    LoxObject value = LoxObject(std::in_place_type<void*>, nullptr);
+    if (stmt->value != nullptr) value = evaluate(stmt->value.get());
+    throw ReturnException(value);
+}
+
 void Interpreter::visitPrint(Print* stmt){
     LoxObject value = evaluate(stmt->expression.get());
     std::cout << stringify(value) << std::endl;

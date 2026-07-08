@@ -9,7 +9,11 @@ LoxObject LoxFunction::call(Interpreter* interpreter, std::vector<LoxObject> arg
     for (int i = 0; i < declaration->params.size(); i++) {
         environment->define(declaration->params[i]->lexeme, arguments[i]);
     }
-    interpreter->executeBlock(declaration->body, std::move(environment));
+    try {
+        interpreter->executeBlock(declaration->body, std::move(environment));
+    } catch (ReturnException returnValue) {
+        return returnValue.value;
+    }
     return LoxObject(std::in_place_type<void*>, nullptr);
 }
 

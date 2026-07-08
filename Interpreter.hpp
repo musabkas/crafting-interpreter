@@ -4,6 +4,7 @@
 #include "Stmt.hpp"
 #include "Environment.hpp"
 #include "LoxFunction.hpp"
+#include "ReturnException.hpp"
 
 class Interpreter{
     std::unique_ptr<Environment> environment;
@@ -35,6 +36,7 @@ class Interpreter{
     void visitWhile(While* stmt);
     void visitVar(Var* stmt);
     void visitFunction(Function* stmt);
+    void visitReturn(Return* stmt);
     void visitPrint(Print* stmt);
     void visitBlock(Block* stmt);
     
