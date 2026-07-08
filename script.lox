@@ -1,5 +1,6 @@
-print clock();
-for (var i = 0; i < 1000000; ) {
-    i = i + 1;
+fun sayHi(first, last) {
+    print "Hi, " + first + " " + last + "!";
 }
-print clock();
+
+sayHi("Dear", "Reader");
+sayHi("Musab", "K");

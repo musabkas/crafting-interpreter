@@ -48,6 +48,16 @@ public:
 	void acceptInterpreter(Interpreter* visitor) override;
 };
 
+class Function : public Stmt {
+public:
+	std::unique_ptr<Token> name;
+	std::vector<std::unique_ptr<Token>> params;
+	std::vector<std::unique_ptr<Stmt>> body;
+
+	Function(std::unique_ptr<Token> name, std::vector<std::unique_ptr<Token>> params, std::vector<std::unique_ptr<Stmt>> body);
+	void acceptInterpreter(Interpreter* visitor) override;
+};
+
 class While : public Stmt {
 public:
 	std::unique_ptr<Expr> condition;

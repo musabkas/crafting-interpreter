@@ -36,6 +36,16 @@ void Var::acceptInterpreter(Interpreter* visitor){
 	return visitor->visitVar(this);
 }
 
+Function::Function(std::unique_ptr<Token> name, std::vector<std::unique_ptr<Token>> params, std::vector<std::unique_ptr<Stmt>> body){
+	this->name = std::move(name);
+	this->params = std::move(params);
+	this->body = std::move(body);
+}
+
+void Function::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitFunction(this);
+}
+
 While::While(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body){
 	this->condition = std::move(condition);
 	this->body = std::move(body);

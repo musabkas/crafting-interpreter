@@ -52,12 +52,31 @@ std::unique_ptr<Stmt> Parser::statement(){
 
 std::unique_ptr<Stmt> Parser::declaration(){
     try {
+        if (match({FUN})) return function("function");
         if (match({VAR})) return varDeclaration();
 
         return statement();
     } catch (ParseError error) {
         synchronize();
     }
+}
+
+std::unique_ptr<Stmt> Parser::function(std::string kind){
+    std::unique_ptr<Token> name = std::make_unique<Token>(consume(IDENTIFIER, "Expect " + kind + " name."));
+    consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
+    std::vector<std::unique_ptr<Token>> parameters = {};
+    if (!check(RIGHT_PAREN)) {
+        do {
+            if (parameters.size() >= 255) {
+                error(peek(), "Can't have more than 255 parameters.");
+            }
+            parameters.emplace_back(std::make_unique<Token>(consume(IDENTIFIER, "Expect parameter name.")));
+        } while (match({COMMA}));
+    }
+    consume(RIGHT_PAREN, "Expect ')' after parameters.");
+    consume(LEFT_BRACE, "Expect '{' before " + kind + " body.");
+    std::vector<std::unique_ptr<Stmt>> body = block();
+    return std::make_unique<Function>(std::move(name), std::move(parameters), std::move(body));
 }
 
 std::unique_ptr<Stmt> Parser::varDeclaration(){

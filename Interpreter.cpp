@@ -6,7 +6,7 @@
 
 Interpreter::Interpreter(){
     environment = std::make_unique<Environment>();
-    Environment* globals = environment.get(); // get a duplicate pointer
+    globals = environment.get(); // get a duplicate pointer
 
     struct ClockCallable : LoxCallable {
         int arity() override { return 0; }
@@ -155,6 +155,11 @@ void Interpreter::visitVar(Var* stmt){
     }
 
     environment->define(stmt->name->lexeme, value);
+}
+
+void Interpreter::visitFunction(Function* stmt){
+    LoxFunction function = LoxFunction(stmt);
+    environment->define(stmt->name->lexeme, LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, std::make_shared<LoxFunction>(function)));
 }
 
 void Interpreter::visitBlock(Block* stmt){
