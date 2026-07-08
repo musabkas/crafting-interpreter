@@ -7,7 +7,7 @@
 #include "ReturnException.hpp"
 
 class Interpreter{
-    std::unique_ptr<Environment> environment;
+    std::shared_ptr<Environment> environment;
     
     LoxObject evaluate(Expr* expression);
     void execute(Stmt* stmt);
@@ -21,7 +21,7 @@ class Interpreter{
     
     public:
     Interpreter();
-    Environment* globals;
+    std::shared_ptr<Environment> globals;
     LoxObject visitAssign(Assign* assign);
     LoxObject visitLogical(Logical* logical);
     LoxObject visitBinary(Binary* binary);
@@ -40,7 +40,7 @@ class Interpreter{
     void visitPrint(Print* stmt);
     void visitBlock(Block* stmt);
     
-    void executeBlock(std::vector<std::unique_ptr<Stmt>>& statements, std::unique_ptr<Environment> environment);
+    void executeBlock(std::vector<std::unique_ptr<Stmt>>& statements, std::shared_ptr<Environment> environment);
 
     void interpret(std::vector<std::unique_ptr<Stmt>> statements);
 };

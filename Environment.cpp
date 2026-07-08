@@ -5,7 +5,7 @@ Environment::Environment(){
     enclosing = nullptr;
 }
 
-Environment::Environment(Environment* enclosing){
+Environment::Environment(std::shared_ptr<Environment> enclosing){
     this->enclosing = enclosing;
 }
 

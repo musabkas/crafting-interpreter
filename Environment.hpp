@@ -5,11 +5,11 @@
 
 class Environment{
     std::unordered_map<std::string, LoxObject> values = {};
-    Environment* enclosing;
+    std::shared_ptr<Environment> enclosing;
     
 public:
     Environment();
-    Environment(Environment* enclosing);
+    Environment(std::shared_ptr<Environment> enclosing);
     void define(std::string name, LoxObject value);
     void assign(Token name, LoxObject value);
     LoxObject get(Token name);

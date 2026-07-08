@@ -1,16 +1,17 @@
 #include "LoxFunction.hpp"
 
-LoxFunction::LoxFunction(Function* declaration){
+LoxFunction::LoxFunction(Function* declaration, std::shared_ptr<Environment> closure){
     this->declaration = declaration;
+    this->closure = closure;
 }
 
 LoxObject LoxFunction::call(Interpreter* interpreter, std::vector<LoxObject> arguments) {
-    std::unique_ptr<Environment> environment = std::make_unique<Environment>(*(interpreter->globals));
+    std::shared_ptr<Environment> environment = std::make_shared<Environment>(closure);
     for (int i = 0; i < declaration->params.size(); i++) {
         environment->define(declaration->params[i]->lexeme, arguments[i]);
     }
     try {
-        interpreter->executeBlock(declaration->body, std::move(environment));
+        interpreter->executeBlock(declaration->body, environment);
     } catch (ReturnException returnValue) {
         return returnValue.value;
     }

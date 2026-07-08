@@ -5,8 +5,8 @@
 #include <iostream>
 
 Interpreter::Interpreter(){
-    environment = std::make_unique<Environment>();
-    globals = environment.get(); // get a duplicate pointer
+    environment = std::make_shared<Environment>();
+    globals = environment;
 
     struct ClockCallable : LoxCallable {
         int arity() override { return 0; }
@@ -164,19 +164,19 @@ void Interpreter::visitVar(Var* stmt){
 }
 
 void Interpreter::visitFunction(Function* stmt){
-    LoxFunction function = LoxFunction(stmt);
+    LoxFunction function = LoxFunction(stmt, environment);
     environment->define(stmt->name->lexeme, LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, std::make_shared<LoxFunction>(function)));
 }
 
 void Interpreter::visitBlock(Block* stmt){
-    executeBlock(stmt->statements, std::make_unique<Environment>(environment.get()));
+    executeBlock(stmt->statements, std::make_shared<Environment>(environment));
 }
 
-void Interpreter::executeBlock(std::vector<std::unique_ptr<Stmt>>& statements, std::unique_ptr<Environment> environment){
-    std::unique_ptr<Environment> previous = std::move(this->environment);
-    this->environment = std::move(environment);
+void Interpreter::executeBlock(std::vector<std::unique_ptr<Stmt>>& statements, std::shared_ptr<Environment> environment){
+    std::shared_ptr<Environment> previous = this->environment;
+    this->environment = environment;
     auto cleanup = [this, &previous](){
-        this->environment = std::move(previous);
+        this->environment = previous;
     };
 
     struct ScopeGuard{

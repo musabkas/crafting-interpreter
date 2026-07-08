@@ -5,8 +5,9 @@
 class LoxFunction : public LoxCallable {
 private:
     Function* declaration;
+    std::shared_ptr<Environment> closure;
 public:
-    LoxFunction(Function* declaration);
+    LoxFunction(Function* declaration, std::shared_ptr<Environment> closure);
     int arity() override;
     LoxObject call(Interpreter* interpreter, std::vector<LoxObject> arguments) override;
     std::string toString() override;
