@@ -5,10 +5,11 @@
 
 class LoxClass : public LoxCallable {
 private:
+    std::shared_ptr<LoxClass> superclass;
     std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods;
 public:
     std::string name;
-    LoxClass(std::string name, std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods);
+    LoxClass(std::string name, std::shared_ptr<LoxClass> superclass, std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods);
     std::shared_ptr<LoxFunction> findMethod(std::string name);
     std::string toString() override;
     int arity() override;

@@ -1,7 +1,8 @@
 #include "LoxClass.hpp"
 #include "LoxInstance.hpp"
 
-LoxClass::LoxClass(std::string name, std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods){
+LoxClass::LoxClass(std::string name, std::shared_ptr<LoxClass> superclass, std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods){
+    this->superclass = superclass;
     this->name = name;
     this->methods = methods;
 }
@@ -9,6 +10,9 @@ LoxClass::LoxClass(std::string name, std::unordered_map<std::string, std::shared
 std::shared_ptr<LoxFunction> LoxClass::findMethod(std::string name){
     if (methods.count(name)){
         return methods[name];
+    }
+    if (superclass != nullptr) {
+        return superclass->findMethod(name);
     }
     return nullptr;
 }

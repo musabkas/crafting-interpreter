@@ -210,13 +210,26 @@ void Interpreter::visitFunction(Function* stmt){
 }
 
 void Interpreter::visitClass(Class* stmt){
+    LoxObject superclass = LoxObject(std::in_place_type<void*>, nullptr);
+    if (stmt->superclass != nullptr) {
+        superclass = evaluate(stmt->superclass.get());
+        if (!(std::holds_alternative<std::shared_ptr<LoxCallable>>(superclass)) ||
+            !(dynamic_cast<LoxClass*>(std::get<std::shared_ptr<LoxCallable>>(superclass).get()))) {
+            throw RuntimeError(*(stmt->superclass->name), "Superclass must be a class.");
+        }
+    }
+
     environment->define(stmt->name->lexeme, LoxObject(std::in_place_type<void*>, nullptr));
     std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods = {};
     for (auto& method : stmt->methods){
         std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(method.get(), environment, method->name->lexeme == "init");
         methods[method->name->lexeme] = function;
     }
-    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name->lexeme, methods);
+    std::shared_ptr<LoxClass> superklass = nullptr;
+    if (stmt->superclass != nullptr) {
+        superklass = (std::dynamic_pointer_cast<LoxClass>(std::get<std::shared_ptr<LoxCallable>>(superclass)));
+    }
+    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name->lexeme, superklass, methods);
     environment->assign(*(stmt->name), LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, klass));
 }
 

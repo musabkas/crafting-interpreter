@@ -103,6 +103,12 @@ void Resolver::visitClass(Class* stmt) {
     currentClass = ClassType::CLASS;
     declare(*stmt->name);
     define(*stmt->name);
+    if (stmt->superclass != nullptr && stmt->name->lexeme == stmt->superclass->name->lexeme) {
+        Loxi::error(*(stmt->superclass->name), "A class can't inherit from itself.");
+    }
+    if (stmt->superclass != nullptr) {
+        stmt->superclass->acceptResolver(this);
+    }
     beginScope();
     scopes.back()["this"] = true;
     for (auto& method : stmt->methods) {

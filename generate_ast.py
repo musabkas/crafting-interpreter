@@ -1,4 +1,4 @@
-types = [
+ExprTypes = [
         ("Assign", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "value")]), 
         ("Logical", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
         ("Set", [("std::unique_ptr<Expr>", "object"), ("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "value")]), 
@@ -20,7 +20,7 @@ StmtTypes = [
             ("Function", [("std::unique_ptr<Token>", "name"), ("std::vector<std::unique_ptr<Token>>", "params"), ("std::vector<std::unique_ptr<Stmt>>", "body")]),
             ("While", [("std::unique_ptr<Expr>", "condition"), ("std::unique_ptr<Stmt>", "body")]),
             ("Block", [("std::vector<std::unique_ptr<Stmt>>", "statements")]),
-            ("Class", [("std::unique_ptr<Token>", "name"), ("std::vector<std::unique_ptr<Function>>", "methods")]),
+            ("Class", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Variable>", "superclass"), ("std::vector<std::unique_ptr<Function>>", "methods")]),
             ]
 visitors = [
             # ("ASTPrinter", "std::string"),
@@ -98,7 +98,7 @@ def defineType(hppFile, cppFile, baseName, className, fieldList):
 
 
 includes = ["<vector>"]
-defineAst("Expr", types, includes)
+defineAst("Expr", ExprTypes, includes)
 visitors = [
             ("Interpreter", "void"),
             ("Resolver", "void")

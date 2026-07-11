@@ -97,9 +97,10 @@ public:
 class Class : public Stmt {
 public:
 	std::unique_ptr<Token> name;
+	std::unique_ptr<Variable> superclass;
 	std::vector<std::unique_ptr<Function>> methods;
 
-	Class(std::unique_ptr<Token> name, std::vector<std::unique_ptr<Function>> methods);
+	Class(std::unique_ptr<Token> name, std::unique_ptr<Variable> superclass, std::vector<std::unique_ptr<Function>> methods);
 	void acceptInterpreter(Interpreter* visitor) override;
 	void acceptResolver(Resolver* visitor) override;
 };
