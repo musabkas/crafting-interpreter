@@ -26,6 +26,7 @@ class Interpreter{
     LoxObject visitAssign(Assign* assign);
     LoxObject visitLogical(Logical* logical);
     LoxObject visitSet(Set* set);
+    LoxObject visitThis(This* thisExpr);
     LoxObject visitBinary(Binary* binary);
     LoxObject visitGrouping(Grouping* grouping);
     LoxObject visitLiteral(Literal* literal);

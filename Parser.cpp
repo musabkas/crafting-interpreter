@@ -354,6 +354,7 @@ std::unique_ptr<Expr> Parser::primary(){
     if (match({STRING})) {
         return std::make_unique<Literal>(std::get<std::string>(previous().literal));
     }
+    if (match({THIS})) return std::make_unique<This>(std::make_unique<Token>(previous()));
     if (match({IDENTIFIER})){
         return std::make_unique<Variable>(std::make_unique<Token> (previous()));
     }

@@ -50,6 +50,15 @@ public:
 	void acceptResolver(Resolver* visitor) override;
 };
 
+class This : public Expr {
+public:
+	std::unique_ptr<Token> keyword;
+
+	This(std::unique_ptr<Token> keyword);
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
+};
+
 class Binary : public Expr {
 public:
 	std::unique_ptr<Expr> left;

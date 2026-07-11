@@ -110,6 +110,10 @@ LoxObject Interpreter::visitSet(Set* set){
     return value;
 }
 
+LoxObject Interpreter::visitThis(This* thisExpr){
+    return lookUpVariable(*(thisExpr->keyword), thisExpr);
+}
+
 LoxObject Interpreter::visitBinary(Binary* binary){
     LoxObject left = evaluate(binary->left.get());
     LoxObject right = evaluate(binary->right.get());

@@ -77,6 +77,10 @@ void Resolver::visitSet(Set* expr){
     resolve(expr->object);
 }
 
+void Resolver::visitThis(This* expr){
+    resolveLocal(expr, *(expr->keyword));
+}
+
 void Resolver::visitUnary(Unary* expr){
     resolve(expr->right);
 }
@@ -91,10 +95,13 @@ void Resolver::visitFunction(Function* stmt) {
 void Resolver::visitClass(Class* stmt) {
     declare(*stmt->name);
     define(*stmt->name);
+    beginScope();
+    scopes.back()["this"] = true;
     for (auto& method : stmt->methods) {
         FunctionType declaration = METHOD;
         resolveFunction(method.get(), declaration);
     }
+    endScope();
 }
 
 void Resolver::visitIf(If* stmt) {

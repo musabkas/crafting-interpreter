@@ -2,6 +2,7 @@ types = [
         ("Assign", [("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "value")]), 
         ("Logical", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
         ("Set", [("std::unique_ptr<Expr>", "object"), ("std::unique_ptr<Token>", "name"), ("std::unique_ptr<Expr>", "value")]), 
+        ("This", [("std::unique_ptr<Token>", "keyword")]), 
         ("Binary", [("std::unique_ptr<Expr>", "left"), ("std::unique_ptr<Token>", "op"), ("std::unique_ptr<Expr>", "right")]), 
         ("Call", [("std::unique_ptr<Expr>", "callee"), ("std::unique_ptr<Token>", "paren"), ("std::vector<std::unique_ptr<Expr>>", "arguments")]), 
         ("Get", [("std::unique_ptr<Expr>", "object"), ("std::unique_ptr<Token>", "name")]), 

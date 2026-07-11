@@ -43,6 +43,18 @@ void Set::acceptResolver(Resolver* visitor){
 	return visitor->visitSet(this);
 }
 
+This::This(std::unique_ptr<Token> keyword){
+	this->keyword = std::move(keyword);
+}
+
+LoxObject This::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitThis(this);
+}
+
+void This::acceptResolver(Resolver* visitor){
+	return visitor->visitThis(this);
+}
+
 Binary::Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right){
 	this->left = std::move(left);
 	this->op = std::move(op);
