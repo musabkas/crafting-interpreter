@@ -10,7 +10,8 @@ enum class FunctionType{
 
 enum class ClassType{
     NONE,
-    CLASS
+    CLASS,
+    SUBCLASS
 };
 
 class Resolver{

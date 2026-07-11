@@ -79,6 +79,11 @@ void Resolver::visitSet(Set* expr){
 }
 
 void Resolver::visitSuper(Super* expr){
+    if (currentClass == ClassType::NONE) {
+        Loxi::error(*(expr->keyword), "Can't use 'super' outside of a class.");
+    } else if (currentClass != ClassType::SUBCLASS) {
+        Loxi::error(*(expr->keyword), "Can't use 'super' in a class with no superclass.");
+    }
     resolveLocal(expr, *(expr->keyword));
 }
 
@@ -111,6 +116,7 @@ void Resolver::visitClass(Class* stmt) {
         Loxi::error(*(stmt->superclass->name), "A class can't inherit from itself.");
     }
     if (stmt->superclass != nullptr) {
+        currentClass = ClassType::SUBCLASS;
         stmt->superclass->acceptResolver(this);
     }
     if (stmt->superclass != nullptr) {
