@@ -1,4 +1,5 @@
 build:
+	python3 generate_ast.py
 	g++ -std=c++17 *.cpp -g -o loxi.out
 
 runprompt:

@@ -1,6 +1,9 @@
 #include "Interpreter.hpp"
 #include "RuntimeError.hpp"
 #include "LoxCallable.hpp"
+#include "LoxFunction.hpp"
+#include "LoxClass.hpp"
+#include "LoxInstance.hpp"
 #include "Loxi.hpp"
 #include <iostream>
 
@@ -184,7 +187,7 @@ void Interpreter::visitFunction(Function* stmt){
 void Interpreter::visitClass(Class* stmt){
     environment->define(stmt->name->lexeme, LoxObject(std::in_place_type<void*>, nullptr));
     std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name->lexeme);
-    environment->assign(*(stmt->name), LoxObject(std::in_place_type<std::shared_ptr<LoxClass>>, klass));
+    environment->assign(*(stmt->name), LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, klass));
 }
 
 void Interpreter::visitBlock(Block* stmt){
@@ -252,5 +255,5 @@ std::string Interpreter::stringify(LoxObject object){
     if (std::holds_alternative<bool>(object)) return (std::get<bool>(object) ? "true" : "false");
     if (std::holds_alternative<std::string>(object)) return std::get<std::string>(object);
     if (std::holds_alternative<std::shared_ptr<LoxCallable>>(object)) return std::get<std::shared_ptr<LoxCallable>>(object)->toString();
-    if (std::holds_alternative<std::shared_ptr<LoxClass>>(object)) return std::get<std::shared_ptr<LoxClass>>(object)->toString();
+    if (std::holds_alternative<std::shared_ptr<LoxInstance>>(object)) return std::get<std::shared_ptr<LoxInstance>>(object)->toString();
 }

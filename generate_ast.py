@@ -38,7 +38,7 @@ def defineAst(baseName, types, includes = [], loxObjDef = True):
         '#include <memory>\n',
         *[f"#include {inc}\n" for inc in includes],
         "\n",
-        ("class LoxCallable;\nclass LoxClass;\nusing LoxObject = std::variant<double, std::string, bool, std::shared_ptr<LoxCallable>, std::shared_ptr<LoxClass>, void*>;\n\n") if loxObjDef else "",
+        ("class LoxCallable;\nclass LoxInstance;\nusing LoxObject = std::variant<double, std::string, bool, std::shared_ptr<LoxCallable>, std::shared_ptr<LoxInstance>, void*>;\n\n") if loxObjDef else "",
         *[f'class {visitor[0]};\n' for visitor in visitors],
         "\n",
         f"class {baseName} {'{'}\n"

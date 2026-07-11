@@ -3,8 +3,6 @@
 #include "Expr.hpp"
 #include "Stmt.hpp"
 #include "Environment.hpp"
-#include "LoxFunction.hpp"
-#include "LoxClass.hpp"
 #include "ReturnException.hpp"
 
 class Interpreter{
