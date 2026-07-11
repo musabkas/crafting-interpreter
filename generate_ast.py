@@ -17,6 +17,7 @@ StmtTypes = [
             ("Function", [("std::unique_ptr<Token>", "name"), ("std::vector<std::unique_ptr<Token>>", "params"), ("std::vector<std::unique_ptr<Stmt>>", "body")]),
             ("While", [("std::unique_ptr<Expr>", "condition"), ("std::unique_ptr<Stmt>", "body")]),
             ("Block", [("std::vector<std::unique_ptr<Stmt>>", "statements")]),
+            ("Class", [("std::unique_ptr<Token>", "name"), ("std::vector<std::unique_ptr<Function>>", "methods")]),
             ]
 visitors = [
             # ("ASTPrinter", "std::string"),
@@ -37,7 +38,7 @@ def defineAst(baseName, types, includes = [], loxObjDef = True):
         '#include <memory>\n',
         *[f"#include {inc}\n" for inc in includes],
         "\n",
-        ("class LoxCallable;\nusing LoxObject = std::variant<double, std::string, bool, std::shared_ptr<LoxCallable>, void*>;\n\n") if loxObjDef else "",
+        ("class LoxCallable;\nclass LoxClass;\nusing LoxObject = std::variant<double, std::string, bool, std::shared_ptr<LoxCallable>, std::shared_ptr<LoxClass>, void*>;\n\n") if loxObjDef else "",
         *[f'class {visitor[0]};\n' for visitor in visitors],
         "\n",
         f"class {baseName} {'{'}\n"

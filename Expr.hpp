@@ -5,7 +5,8 @@
 #include <vector>
 
 class LoxCallable;
-using LoxObject = std::variant<double, std::string, bool, std::shared_ptr<LoxCallable>, void*>;
+class LoxClass;
+using LoxObject = std::variant<double, std::string, bool, std::shared_ptr<LoxCallable>, std::shared_ptr<LoxClass>, void*>;
 
 class Interpreter;
 class Resolver;

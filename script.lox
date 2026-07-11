@@ -1,6 +1,7 @@
-// return "hi";
-
-{
-    var a = 1;
-    var a = 2;
+class DevonshireCream {
+    serveOn() {
+       return "Scones";
+    }
 }
+
+print DevonshireCream;

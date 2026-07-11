@@ -29,7 +29,8 @@ private:
     std::unique_ptr<Stmt> returnStatement();
     std::unique_ptr<Stmt> expressionStatement();
     std::unique_ptr<Stmt> declaration();
-    std::unique_ptr<Stmt> function(std::string kind);
+    std::unique_ptr<Stmt> classDeclaration();
+    std::unique_ptr<Function> function(std::string kind);
     std::unique_ptr<Stmt> varDeclaration();
     std::vector<std::unique_ptr<Stmt>> block();
     

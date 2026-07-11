@@ -79,6 +79,11 @@ void Resolver::visitFunction(Function* stmt) {
     resolveFunction(stmt, FUNCTION);
 }
 
+void Resolver::visitClass(Class* stmt) {
+    declare(*stmt->name);
+    define(*stmt->name);
+}
+
 void Resolver::visitIf(If* stmt) {
     resolve(stmt->condition);
     resolve(stmt->thenBranch);

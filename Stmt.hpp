@@ -94,3 +94,13 @@ public:
 	void acceptResolver(Resolver* visitor) override;
 };
 
+class Class : public Stmt {
+public:
+	std::unique_ptr<Token> name;
+	std::vector<std::unique_ptr<Function>> methods;
+
+	Class(std::unique_ptr<Token> name, std::vector<std::unique_ptr<Function>> methods);
+	void acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
+};
+

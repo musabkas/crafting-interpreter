@@ -4,6 +4,7 @@
 #include "Stmt.hpp"
 #include "Environment.hpp"
 #include "LoxFunction.hpp"
+#include "LoxClass.hpp"
 #include "ReturnException.hpp"
 
 class Interpreter{
@@ -38,6 +39,7 @@ class Interpreter{
     void visitWhile(While* stmt);
     void visitVar(Var* stmt);
     void visitFunction(Function* stmt);
+    void visitClass(Class* stmt);
     void visitReturn(Return* stmt);
     void visitPrint(Print* stmt);
     void visitBlock(Block* stmt);

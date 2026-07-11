@@ -53,6 +53,7 @@ std::unique_ptr<Stmt> Parser::statement(){
 
 std::unique_ptr<Stmt> Parser::declaration(){
     try {
+        if (match({CLASS})) return classDeclaration();
         if (match({FUN})) return function("function");
         if (match({VAR})) return varDeclaration();
 
@@ -62,7 +63,19 @@ std::unique_ptr<Stmt> Parser::declaration(){
     }
 }
 
-std::unique_ptr<Stmt> Parser::function(std::string kind){
+std::unique_ptr<Stmt> Parser::classDeclaration(){
+    std::unique_ptr<Token> name = std::make_unique<Token>(consume(IDENTIFIER, "Expect class name."));
+    consume(LEFT_BRACE, "Expect '{' before class body.");
+    std::vector<std::unique_ptr<Function>> methods = {};
+    while (!check(RIGHT_BRACE) && !isAtEnd()) {
+        methods.emplace_back(function("method"));
+    }
+
+    consume(RIGHT_BRACE, "Expect '}' after class body.");
+    return std::make_unique<Class>(std::move(name), std::move(methods));
+}
+
+std::unique_ptr<Function> Parser::function(std::string kind){
     std::unique_ptr<Token> name = std::make_unique<Token>(consume(IDENTIFIER, "Expect " + kind + " name."));
     consume(LEFT_PAREN, "Expect '(' after " + kind + " name.");
     std::vector<std::unique_ptr<Token>> parameters = {};

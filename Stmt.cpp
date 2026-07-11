@@ -105,3 +105,16 @@ void Block::acceptResolver(Resolver* visitor){
 	return visitor->visitBlock(this);
 }
 
+Class::Class(std::unique_ptr<Token> name, std::vector<std::unique_ptr<Function>> methods){
+	this->name = std::move(name);
+	this->methods = std::move(methods);
+}
+
+void Class::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitClass(this);
+}
+
+void Class::acceptResolver(Resolver* visitor){
+	return visitor->visitClass(this);
+}
+
