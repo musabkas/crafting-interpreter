@@ -77,6 +77,15 @@ LoxObject Interpreter::visitCall(Call* call){
     return function->call(this, arguments);
 }
 
+LoxObject Interpreter::visitGet(Get* get){
+    LoxObject object = evaluate(get->object.get());
+    if (std::holds_alternative<std::shared_ptr<LoxInstance>>(object)){
+        return std::get<std::shared_ptr<LoxInstance>>(object)->get(get->name.get());
+    }
+
+    throw RuntimeError(*get->name, "Only instances have properties.");
+}
+
 LoxObject Interpreter::visitLogical(Logical* logical){
     LoxObject left = evaluate(logical->left.get());
 
@@ -87,6 +96,18 @@ LoxObject Interpreter::visitLogical(Logical* logical){
     }
 
     return evaluate(logical->right.get());
+}
+
+LoxObject Interpreter::visitSet(Set* set){
+    LoxObject object = evaluate(set->object.get());
+
+    if (!(std::holds_alternative<std::shared_ptr<LoxInstance>>(object))){
+        throw RuntimeError(*set->name, "Only instances have fields.");
+    }
+
+    LoxObject value = evaluate(set->value.get());
+    std::get<std::shared_ptr<LoxInstance>>(object)->set(set->name.get(), value);
+    return value;
 }
 
 LoxObject Interpreter::visitBinary(Binary* binary){

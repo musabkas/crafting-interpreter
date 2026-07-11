@@ -25,11 +25,13 @@ class Interpreter{
     Interpreter();
     LoxObject visitAssign(Assign* assign);
     LoxObject visitLogical(Logical* logical);
+    LoxObject visitSet(Set* set);
     LoxObject visitBinary(Binary* binary);
     LoxObject visitGrouping(Grouping* grouping);
     LoxObject visitLiteral(Literal* literal);
     LoxObject visitUnary(Unary* unary);
     LoxObject visitCall(Call* call);
+    LoxObject visitGet(Get* get);
     LoxObject visitVariable(Variable* var);
     
     void visitExpression(Expression* stmt);

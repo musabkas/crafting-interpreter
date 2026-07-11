@@ -29,6 +29,20 @@ void Logical::acceptResolver(Resolver* visitor){
 	return visitor->visitLogical(this);
 }
 
+Set::Set(std::unique_ptr<Expr> object, std::unique_ptr<Token> name, std::unique_ptr<Expr> value){
+	this->object = std::move(object);
+	this->name = std::move(name);
+	this->value = std::move(value);
+}
+
+LoxObject Set::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitSet(this);
+}
+
+void Set::acceptResolver(Resolver* visitor){
+	return visitor->visitSet(this);
+}
+
 Binary::Binary(std::unique_ptr<Expr> left, std::unique_ptr<Token> op, std::unique_ptr<Expr> right){
 	this->left = std::move(left);
 	this->op = std::move(op);
@@ -55,6 +69,19 @@ LoxObject Call::acceptInterpreter(Interpreter* visitor){
 
 void Call::acceptResolver(Resolver* visitor){
 	return visitor->visitCall(this);
+}
+
+Get::Get(std::unique_ptr<Expr> object, std::unique_ptr<Token> name){
+	this->object = std::move(object);
+	this->name = std::move(name);
+}
+
+LoxObject Get::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitGet(this);
+}
+
+void Get::acceptResolver(Resolver* visitor){
+	return visitor->visitGet(this);
 }
 
 Grouping::Grouping(std::unique_ptr<Expr> expression){

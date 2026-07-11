@@ -221,6 +221,8 @@ std::unique_ptr<Expr> Parser::assignment(){
         if (auto var = dynamic_cast<Variable*>(expr.get())){
             std::unique_ptr<Token> name = std::make_unique<Token>(*(var->name));
             return std::make_unique<Assign>(std::move(name), std::move(value));
+        } else if (auto get = dynamic_cast<Get*>(expr.get())) {
+            return std::make_unique<Set>(std::move(get->object), std::move(get->name), std::move(value));
         }
 
         error(*equals, "Invalid assignment target.");
@@ -315,6 +317,9 @@ std::unique_ptr<Expr> Parser::call(){
     while (true) {
         if (match({LEFT_PAREN})) {
             expr = finishCall(std::move(expr));
+        } else if (match({DOT})) {
+            std::unique_ptr<Token> name = std::make_unique<Token>(consume(IDENTIFIER, "Expect property name after '.'."));
+            expr = std::make_unique<Get>(std::move(expr), std::move(name));
         } else {
             break;
         }

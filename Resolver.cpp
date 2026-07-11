@@ -55,6 +55,10 @@ void Resolver::visitCall(Call* expr){
     }
 }
 
+void Resolver::visitGet(Get* expr){
+    resolve(expr->object);
+}
+
 void Resolver::visitGrouping(Grouping* expr){
     resolve(expr->expression);
 }
@@ -66,6 +70,11 @@ void Resolver::visitLiteral(Literal* expr){
 void Resolver::visitLogical(Logical* expr){
     resolve(expr->left);
     resolve(expr->right);
+}
+
+void Resolver::visitSet(Set* expr){
+    resolve(expr->value);
+    resolve(expr->object);
 }
 
 void Resolver::visitUnary(Unary* expr){

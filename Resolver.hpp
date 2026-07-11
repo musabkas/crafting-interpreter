@@ -29,11 +29,13 @@ public:
     
     void visitAssign(Assign* expr);
     void visitLogical(Logical* expr);
+    void visitSet(Set* expr);
     void visitBinary(Binary* expr);
     void visitGrouping(Grouping* expr);
     void visitLiteral(Literal* expr);
     void visitUnary(Unary* expr);
     void visitCall(Call* expr);
+    void visitGet(Get* expr);
     void visitVariable(Variable* expr);
     
     void visitExpression(Expression* stmt);

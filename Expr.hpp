@@ -39,6 +39,17 @@ public:
 	void acceptResolver(Resolver* visitor) override;
 };
 
+class Set : public Expr {
+public:
+	std::unique_ptr<Expr> object;
+	std::unique_ptr<Token> name;
+	std::unique_ptr<Expr> value;
+
+	Set(std::unique_ptr<Expr> object, std::unique_ptr<Token> name, std::unique_ptr<Expr> value);
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
+};
+
 class Binary : public Expr {
 public:
 	std::unique_ptr<Expr> left;
@@ -57,6 +68,16 @@ public:
 	std::vector<std::unique_ptr<Expr>> arguments;
 
 	Call(std::unique_ptr<Expr> callee, std::unique_ptr<Token> paren, std::vector<std::unique_ptr<Expr>> arguments);
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
+};
+
+class Get : public Expr {
+public:
+	std::unique_ptr<Expr> object;
+	std::unique_ptr<Token> name;
+
+	Get(std::unique_ptr<Expr> object, std::unique_ptr<Token> name);
 	LoxObject acceptInterpreter(Interpreter* visitor) override;
 	void acceptResolver(Resolver* visitor) override;
 };
