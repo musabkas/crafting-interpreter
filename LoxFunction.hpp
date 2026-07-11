@@ -6,8 +6,9 @@ class LoxFunction : public LoxCallable {
 private:
     Function* declaration;
     std::shared_ptr<Environment> closure;
+    bool isInitializer;
 public:
-    LoxFunction(Function* declaration, std::shared_ptr<Environment> closure);
+    LoxFunction(Function* declaration, std::shared_ptr<Environment> closure, bool isInitializer);
     std::shared_ptr<LoxFunction> bind(std::shared_ptr<LoxInstance> instance);
     int arity() override;
     LoxObject call(Interpreter* interpreter, std::vector<LoxObject> arguments) override;

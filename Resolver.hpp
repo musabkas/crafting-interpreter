@@ -1,16 +1,23 @@
 #pragma once
 #include "Interpreter.hpp"
 
-enum FunctionType{
+enum class FunctionType{
     NONE,
     FUNCTION,
+    INITIALIZER,
     METHOD
+};
+
+enum class ClassType{
+    NONE,
+    CLASS
 };
 
 class Resolver{
     Interpreter* interpreter;
     std::vector<std::unordered_map<std::string, bool>> scopes;
     FunctionType currentFunction;
+    ClassType currentClass;
 
     void resolve(std::unique_ptr<Stmt>& stmt);
     void resolve(std::unique_ptr<Expr>& expr);

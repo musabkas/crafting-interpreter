@@ -4,7 +4,8 @@
 Resolver::Resolver(Interpreter* interpreter){
     this->interpreter = interpreter;
     scopes = {};
-    currentFunction = NONE;
+    currentFunction = FunctionType::NONE;
+    currentClass = ClassType::NONE;
 }
 
 void Resolver::visitBlock(Block* stmt){
@@ -78,6 +79,11 @@ void Resolver::visitSet(Set* expr){
 }
 
 void Resolver::visitThis(This* expr){
+    if (currentClass == ClassType::NONE) {
+        Loxi::error(*(expr->keyword), "Can't use 'this' outside of a class.");
+        return;
+    }
+    
     resolveLocal(expr, *(expr->keyword));
 }
 
@@ -89,19 +95,25 @@ void Resolver::visitFunction(Function* stmt) {
     declare(*stmt->name);
     define(*stmt->name);
 
-    resolveFunction(stmt, FUNCTION);
+    resolveFunction(stmt, FunctionType::FUNCTION);
 }
 
 void Resolver::visitClass(Class* stmt) {
+    ClassType enclosingClass = currentClass;
+    currentClass = ClassType::CLASS;
     declare(*stmt->name);
     define(*stmt->name);
     beginScope();
     scopes.back()["this"] = true;
     for (auto& method : stmt->methods) {
-        FunctionType declaration = METHOD;
+        FunctionType declaration = FunctionType::METHOD;
+        if (method->name->lexeme == "init") {
+            declaration = FunctionType::INITIALIZER;
+        }
         resolveFunction(method.get(), declaration);
     }
     endScope();
+    currentClass = enclosingClass;
 }
 
 void Resolver::visitIf(If* stmt) {
@@ -115,11 +127,14 @@ void Resolver::visitPrint(Print* stmt){
 }
 
 void Resolver::visitReturn(Return* stmt){
-    if (currentFunction == NONE) {
+    if (currentFunction == FunctionType::NONE) {
         Loxi::error(*stmt->keyword, "Can't return from top-level code.");
     }
 
     if (stmt->value != nullptr){
+        if (currentFunction == FunctionType::INITIALIZER) {
+            Loxi::error(*(stmt->keyword), "Can't return a value from an initializer.");
+        }
         resolve(stmt->value);
     }
 }

@@ -1,6 +1,7 @@
 #include "LoxFunction.hpp"
 
-LoxFunction::LoxFunction(Function* declaration, std::shared_ptr<Environment> closure){
+LoxFunction::LoxFunction(Function* declaration, std::shared_ptr<Environment> closure, bool isInitializer){
+    this->isInitializer = isInitializer;
     this->declaration = declaration;
     this->closure = closure;
 }
@@ -8,7 +9,7 @@ LoxFunction::LoxFunction(Function* declaration, std::shared_ptr<Environment> clo
 std::shared_ptr<LoxFunction> LoxFunction::bind(std::shared_ptr<LoxInstance>instance){
     std::shared_ptr<Environment> environment = std::make_shared<Environment>(closure);
     environment->define("this", LoxObject(std::in_place_type<std::shared_ptr<LoxInstance>>, instance));
-    return std::make_shared<LoxFunction>(declaration, environment);
+    return std::make_shared<LoxFunction>(declaration, environment, isInitializer);
 }
 
 LoxObject LoxFunction::call(Interpreter* interpreter, std::vector<LoxObject> arguments) {
@@ -19,8 +20,10 @@ LoxObject LoxFunction::call(Interpreter* interpreter, std::vector<LoxObject> arg
     try {
         interpreter->executeBlock(declaration->body, environment);
     } catch (ReturnException returnValue) {
+        if (isInitializer) return closure->getAt(0, "this");
         return returnValue.value;
     }
+    if (isInitializer) return closure->getAt(0, "this");
     return LoxObject(std::in_place_type<void*>, nullptr);
 }
 

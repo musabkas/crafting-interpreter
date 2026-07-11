@@ -19,9 +19,15 @@ std::string LoxClass::toString(){
 
 LoxObject LoxClass::call(Interpreter* interpreter, std::vector<LoxObject> arguments) {
     std::shared_ptr<LoxInstance> instance = std::make_shared<LoxInstance>(this);
+    std::shared_ptr<LoxFunction> initializer = findMethod("init");
+    if (initializer != nullptr) {
+        initializer->bind(instance)->call(interpreter, arguments);
+    }
     return LoxObject(std::in_place_type<std::shared_ptr<LoxInstance>>, instance);
 }
 
 int LoxClass::arity(){
-    return 0;
+    std::shared_ptr<LoxFunction> initializer = findMethod("init");
+    if (initializer == nullptr) return 0;
+    return initializer->arity();
 }

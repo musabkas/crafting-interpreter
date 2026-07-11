@@ -205,7 +205,7 @@ void Interpreter::visitVar(Var* stmt){
 }
 
 void Interpreter::visitFunction(Function* stmt){
-    LoxFunction function = LoxFunction(stmt, environment);
+    LoxFunction function = LoxFunction(stmt, environment, false);
     environment->define(stmt->name->lexeme, LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, std::make_shared<LoxFunction>(function)));
 }
 
@@ -213,7 +213,7 @@ void Interpreter::visitClass(Class* stmt){
     environment->define(stmt->name->lexeme, LoxObject(std::in_place_type<void*>, nullptr));
     std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods = {};
     for (auto& method : stmt->methods){
-        std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(method.get(), environment);
+        std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(method.get(), environment, method->name->lexeme == "init");
         methods[method->name->lexeme] = function;
     }
     std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name->lexeme, methods);
