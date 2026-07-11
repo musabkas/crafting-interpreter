@@ -359,6 +359,13 @@ std::unique_ptr<Expr> Parser::primary(){
     if (match({STRING})) {
         return std::make_unique<Literal>(std::get<std::string>(previous().literal));
     }
+    if (match({SUPER})) {
+        std::unique_ptr<Token> keyword = std::make_unique<Token>(previous());
+        consume(DOT, "Expect '.' after 'super'.");
+        std::unique_ptr<Token> method = std::make_unique<Token>(consume(IDENTIFIER, "Expect superclass method name."));
+        return std::make_unique<Super>(std::move(keyword), std::move(method));
+        
+    }
     if (match({THIS})) return std::make_unique<This>(std::make_unique<Token>(previous()));
     if (match({IDENTIFIER})){
         return std::make_unique<Variable>(std::make_unique<Token> (previous()));

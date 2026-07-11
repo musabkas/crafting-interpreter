@@ -50,6 +50,16 @@ public:
 	void acceptResolver(Resolver* visitor) override;
 };
 
+class Super : public Expr {
+public:
+	std::unique_ptr<Token> keyword;
+	std::unique_ptr<Token> method;
+
+	Super(std::unique_ptr<Token> keyword, std::unique_ptr<Token> method);
+	LoxObject acceptInterpreter(Interpreter* visitor) override;
+	void acceptResolver(Resolver* visitor) override;
+};
+
 class This : public Expr {
 public:
 	std::unique_ptr<Token> keyword;

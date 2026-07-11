@@ -43,6 +43,19 @@ void Set::acceptResolver(Resolver* visitor){
 	return visitor->visitSet(this);
 }
 
+Super::Super(std::unique_ptr<Token> keyword, std::unique_ptr<Token> method){
+	this->keyword = std::move(keyword);
+	this->method = std::move(method);
+}
+
+LoxObject Super::acceptInterpreter(Interpreter* visitor){
+	return visitor->visitSuper(this);
+}
+
+void Super::acceptResolver(Resolver* visitor){
+	return visitor->visitSuper(this);
+}
+
 This::This(std::unique_ptr<Token> keyword){
 	this->keyword = std::move(keyword);
 }

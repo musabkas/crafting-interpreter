@@ -38,6 +38,7 @@ public:
     void visitAssign(Assign* expr);
     void visitLogical(Logical* expr);
     void visitSet(Set* expr);
+    void visitSuper(Super* expr);
     void visitThis(This* expr);
     void visitBinary(Binary* expr);
     void visitGrouping(Grouping* expr);

@@ -78,6 +78,10 @@ void Resolver::visitSet(Set* expr){
     resolve(expr->object);
 }
 
+void Resolver::visitSuper(Super* expr){
+    resolveLocal(expr, *(expr->keyword));
+}
+
 void Resolver::visitThis(This* expr){
     if (currentClass == ClassType::NONE) {
         Loxi::error(*(expr->keyword), "Can't use 'this' outside of a class.");
@@ -109,6 +113,10 @@ void Resolver::visitClass(Class* stmt) {
     if (stmt->superclass != nullptr) {
         stmt->superclass->acceptResolver(this);
     }
+    if (stmt->superclass != nullptr) {
+        beginScope();
+        scopes.back()["super"] = true;
+    }
     beginScope();
     scopes.back()["this"] = true;
     for (auto& method : stmt->methods) {
@@ -119,6 +127,9 @@ void Resolver::visitClass(Class* stmt) {
         resolveFunction(method.get(), declaration);
     }
     endScope();
+    if (stmt->superclass != nullptr) {
+        endScope();
+    }
     currentClass = enclosingClass;
 }
 

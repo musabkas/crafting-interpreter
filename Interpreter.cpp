@@ -110,6 +110,17 @@ LoxObject Interpreter::visitSet(Set* set){
     return value;
 }
 
+LoxObject Interpreter::visitSuper(Super* super){
+    int distance = locals[super];
+    std::shared_ptr<LoxClass> superclass = std::dynamic_pointer_cast<LoxClass>(std::get<std::shared_ptr<LoxCallable>>(environment->getAt(distance, "super")));
+    std::shared_ptr<LoxInstance> object = std::get<std::shared_ptr<LoxInstance>>(environment->getAt(distance - 1, "this"));
+    std::shared_ptr<LoxFunction> method = superclass->findMethod(super->method->lexeme);
+    if (method == nullptr) {
+        throw RuntimeError(*(super->method), "Undefined property '" + super->method->lexeme + "'.");
+    }
+    return LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, method->bind(object));
+}
+
 LoxObject Interpreter::visitThis(This* thisExpr){
     return lookUpVariable(*(thisExpr->keyword), thisExpr);
 }
@@ -220,6 +231,10 @@ void Interpreter::visitClass(Class* stmt){
     }
 
     environment->define(stmt->name->lexeme, LoxObject(std::in_place_type<void*>, nullptr));
+    if (stmt->superclass != nullptr) {
+        environment = std::make_shared<Environment>(environment);
+        environment->define("super", superclass);
+    }
     std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods = {};
     for (auto& method : stmt->methods){
         std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(method.get(), environment, method->name->lexeme == "init");
@@ -230,6 +245,9 @@ void Interpreter::visitClass(Class* stmt){
         superklass = (std::dynamic_pointer_cast<LoxClass>(std::get<std::shared_ptr<LoxCallable>>(superclass)));
     }
     std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name->lexeme, superklass, methods);
+    if (superklass != nullptr){
+        environment = environment->enclosing;
+    }
     environment->assign(*(stmt->name), LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, klass));
 }
 
