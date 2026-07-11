@@ -1,8 +1,16 @@
 #include "LoxClass.hpp"
 #include "LoxInstance.hpp"
 
-LoxClass::LoxClass(std::string name){
+LoxClass::LoxClass(std::string name, std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods){
     this->name = name;
+    this->methods = methods;
+}
+
+std::shared_ptr<LoxFunction> LoxClass::findMethod(std::string name){
+    if (methods.count(name)){
+        return methods[name];
+    }
+    return nullptr;
 }
 
 std::string LoxClass::toString(){

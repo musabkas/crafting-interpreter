@@ -10,6 +10,9 @@ LoxObject LoxInstance::get(Token* name){
         return fields[name->lexeme];
     }
 
+    std::shared_ptr<LoxFunction> method = klass->findMethod(name->lexeme);
+    if (method != nullptr) return LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, method);
+
     throw RuntimeError(*name, "Undefined property '" + name->lexeme + "'.");
 }
 

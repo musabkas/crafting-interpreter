@@ -3,7 +3,8 @@
 
 enum FunctionType{
     NONE,
-    FUNCTION
+    FUNCTION,
+    METHOD
 };
 
 class Resolver{

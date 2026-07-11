@@ -207,7 +207,12 @@ void Interpreter::visitFunction(Function* stmt){
 
 void Interpreter::visitClass(Class* stmt){
     environment->define(stmt->name->lexeme, LoxObject(std::in_place_type<void*>, nullptr));
-    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name->lexeme);
+    std::unordered_map<std::string, std::shared_ptr<LoxFunction>> methods = {};
+    for (auto& method : stmt->methods){
+        std::shared_ptr<LoxFunction> function = std::make_shared<LoxFunction>(method.get(), environment);
+        methods[method->name->lexeme] = function;
+    }
+    std::shared_ptr<LoxClass> klass = std::make_shared<LoxClass>(stmt->name->lexeme, methods);
     environment->assign(*(stmt->name), LoxObject(std::in_place_type<std::shared_ptr<LoxCallable>>, klass));
 }
 

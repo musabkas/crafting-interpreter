@@ -91,6 +91,10 @@ void Resolver::visitFunction(Function* stmt) {
 void Resolver::visitClass(Class* stmt) {
     declare(*stmt->name);
     define(*stmt->name);
+    for (auto& method : stmt->methods) {
+        FunctionType declaration = METHOD;
+        resolveFunction(method.get(), declaration);
+    }
 }
 
 void Resolver::visitIf(If* stmt) {
