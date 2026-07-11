@@ -7,6 +7,7 @@ class Loxi {
     static bool hadError;
     static bool hadRuntimeError;
     static Interpreter interpreter;
+    bool needsContinuation(const std::string& totalInput);
     
     protected:
     void run(std::string source);

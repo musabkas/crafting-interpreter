@@ -51,12 +51,29 @@ void Loxi::runtimeError(RuntimeError error){
     hadRuntimeError = true;
 }
 
+bool Loxi::needsContinuation(const std::string& totalInput) {
+    int openBraces = 0;
+    for (char c : totalInput) {
+        if (c == '{') openBraces++;
+        if (c == '}') openBraces--;
+    }
+    // If openBraces > 0, the code block is incomplete
+    return openBraces > 0;
+}
+
 void Loxi::runPrompt() {
+    std::string buffer = "";
     while (true) {
-        std::cout << "> ";
+        if (buffer.size() == 0) std::cout << "> ";
+        else std::cout << "... ";
+
         std::string line;
         if (!std::getline(std::cin, line)) break; // if EOF sent then end program, else read line
-        run(line);
+        buffer += line + "\n";
+
+        if (needsContinuation(buffer)) continue;
+        run(buffer);
+        buffer.clear();
         hadError = false;
     }
     std::cout << std::endl;
